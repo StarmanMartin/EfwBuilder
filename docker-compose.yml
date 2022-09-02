@@ -17,8 +17,6 @@ services:
       - POSTGRES_PASSWORD=postgres
   web:
     build: .
-    expose:
-      - "8000:8000"
     volumes:
       - .:/code
     env_file:
