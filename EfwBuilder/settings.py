@@ -27,8 +27,8 @@ DEBUG =  os.environ.get('FLAVOR') != 'production'
 
 if not DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1']  + os.environ.get('HOST').split(',')
-    PORT = os.environ.get('PORT')
-    CSRF_TRUSTED_ORIGINS = ['http://%s:%s' % (x, PORT) for x in os.environ.get('HOST').split(',')]
+    PORT = os.environ.get('PORT') or ""
+    CSRF_TRUSTED_ORIGINS = ['http://%s%s' % (x, PORT) for x in os.environ.get('HOST').split(',')]
 
 # Application definition
 

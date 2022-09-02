@@ -8,6 +8,7 @@ class GitListController extends AbstractSDC {
         super();
         this.contentUrl = "/sdc_view/adminview/git_list"; //<git-list></git-list>
         this._cssUrls.push('/static/Adminview/css/sdc/git_list.css');
+        this.contentReload = true;
         this.events.unshift({
             'click': {
                 '.btn-reload-git': function() {

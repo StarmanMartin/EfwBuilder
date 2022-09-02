@@ -8,6 +8,8 @@ class EfwListController extends AbstractSDC {
         super();
         this.contentUrl = "/sdc_view/dashboard/efw_list"; //<efw-list></efw-list>
         this._cssUrls.push('/static/Dashboard/css/sdc/efw_list.css');
+
+        this.contentReload = true;
         this.events.unshift({
 
         });
