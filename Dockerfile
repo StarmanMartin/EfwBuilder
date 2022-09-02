@@ -1,6 +1,10 @@
 FROM python:3.10
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+
+RUN apt update
+RUN apt --assume-yes install git nodejs npm
+
 WORKDIR /opt
 RUN wget "https://go.dev/dl/go1.10.8.linux-amd64.tar.gz"
 RUN rm -rf /usr/local/go
@@ -17,6 +21,8 @@ WORKDIR /code
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+COPY package.json .
+RUN npm install
 
 EXPOSE 8000
 
