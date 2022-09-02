@@ -1,0 +1,18 @@
+{% load i18n %}
+
+<tr class="item-row-{{ elem.pk }}">
+    <th scope="row">{{ elem.name }}</th>
+    <td>{{ elem.get_efw_type_display }}</td>
+    <td>{{ elem.dst }}</td>
+    <td>{{ elem.get_architecture_display }}</td>
+    <td>
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <a target="_blank" href="{% url 'scd_view_efw_download' efw_pk=elem.pk %}" class="btn btn-info" data-toggle="tooltip" data-placement="left" title="{% trans 'Download Executable!' %}">
+                <i class="bi bi-download"></i>
+            </a>
+            <a href=".~efw-edit~&efw_pk={{ elem.pk }}" class="btn btn-dark navigation-links" data-toggle="tooltip" data-placement="left" title="{% trans 'Edit Instance!' %}">
+                <i class="bi bi-wrench-adjustable-circle"></i>
+            </a>
+        </div>
+    </td>
+</tr>

@@ -1,0 +1,13 @@
+{% load i18n %}
+
+<div class="container">
+
+    <div class="row">
+        <form class="ajax-form" method="post" action="{% url 'scd_view_git_new' %}">
+            {% csrf_token %}
+            <input type="hidden" name="_method" value="api">
+            {% include "elements/form.html" with form=form %}
+            <button class="btn btn-success">{% trans 'Submit' %}</button>
+        </form>
+    </div>
+</div>

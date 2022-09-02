@@ -1,0 +1,23 @@
+{% extends "elements/dashboard.html" %}
+{% load i18n %}
+
+{% block sidebar %}
+    <ul class="btn-layer">
+        <li>
+            <a class="navigation-links" href="{% url 'sdc_index' %}~admin-main-view~admin-user">
+                {% trans 'User' %}
+            </a>
+        </li>
+        <li>
+            <a class="navigation-links" href="{% url 'sdc_index' %}~admin-main-view~git-list">
+                {% trans 'Git Repos.' %}
+            </a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block mainwindow %}
+    <h1>{% trans "Welcome to the Admin Mode" %}</h1>
+
+    <p>{% trans "Here you can manage the users and the used Git repository" %}</p>
+{% endblock %}

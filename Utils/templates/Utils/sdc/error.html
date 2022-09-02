@@ -1,0 +1,8 @@
+{% load i18n %}
+<h1 class="error-code">{{ code }}</h1>
+
+{% if code == 404 %}
+    <h3 class="error-msg">{% trans 'Page counld not be found!' %}</h3>
+{% elif code == 403 %}
+    <h3 class="error-msg">{% trans 'Unfortunately you are not allowed to do that!' %}</h3>
+{% endif %}

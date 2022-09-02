@@ -1,0 +1,7 @@
+/node_modules/
+/www/
+/.idea/
+/.env
+/db.sqlite3
+/package-lock.json
+/projects/builds/

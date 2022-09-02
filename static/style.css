@@ -1,0 +1,23 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar-dummy {
+    height: 70px;
+}
+
+
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn-group {
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.collapse:not(.show) .user-manager-main {
+    position: absolute;
+    right: 18px;
+    top: 15px;
+}

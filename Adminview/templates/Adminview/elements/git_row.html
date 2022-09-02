@@ -1,0 +1,41 @@
+{% load i18n %}
+
+<tr class="item-row-{{ elem.pk }}">
+    <th scope="row">{{ elem.name }}</th>
+    <td>{{ elem.url }}</td>
+    <td>{{ elem.branch }}</td>
+    <td>{{ elem.last_reload|date:"SHORT_DATE_FORMAT" }}</td>
+    <td>
+        <div class="btn-group" role="group" aria-label="Basic example">
+            {% if not elem.is_active %}
+            <form class="ajax-form" method="post" action="{% url 'scd_view_git_list' %}">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="api">
+                <input type="hidden" name="_action" value="activate">
+                <input type="hidden" name="pk" value="{{ elem.pk }}">
+                    <button class="btn btn-danger btn-activate-user" data-toggle="tooltip" data-placement="left" title="{% trans 'Activate git repo!' %}">
+                        <i class="bi bi-check-circle"></i>
+                    </button>
+            </form>
+            {% else %}
+            <div class="btn btn-success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            {% endif %}
+            <form class="ajax-form" method="post" action="{% url 'scd_view_git_list' %}">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="api">
+                <input type="hidden" name="_action" value="reload">
+                <input type="hidden" name="pk" value="{{ elem.pk }}">
+                <button class="btn btn-danger btn-reload-git" data-toggle="tooltip" data-placement="left" title="{% trans 'Reload git repo!' %}">
+                    <i class="bi bi-bootstrap-reboot"></i>
+                </button>
+            </form>
+
+            <a class="btn btn-dark navigation-links" href=".~git-edit~&git_pk={{ elem.pk }}" data-toggle="tooltip" data-placement="left" title="{% trans 'Edit git repo!' %}">
+                <i class="bi bi-wrench-adjustable-circle"></i>
+            </a>
+
+        </div>
+    </td>
+</tr>

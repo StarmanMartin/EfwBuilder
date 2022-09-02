@@ -1,0 +1,16 @@
+{% load i18n %}
+
+<div class="container">
+
+    <button class="btn btn-dark navigation-links" href="..">
+        {% trans 'Done' %}
+    </button>
+
+    <div class="row">
+        <form class="ajax-form" method="post" action="{% url 'scd_view_git_edit' git_pk=form.instance.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="_method" value="api">
+            {% include "elements/form.html" with form=form %}
+        </form>
+    </div>
+</div>

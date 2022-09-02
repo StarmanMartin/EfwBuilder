@@ -1,0 +1,19 @@
+<flex class="main-view-flex-container h" style="flex: 1;">
+    <flex-item data-target="#flex-elem-right-btn" id="flex-elem-left" class="drag-ground" style="flex: 1;">
+        {% block sidebar %}{% endblock %}
+    </flex-item>
+    <flex-resizer class="resizer"></flex-resizer>
+
+    <flex-item style="flex: 3;">
+        <div class="sub-page-container">
+        <div class="container">
+            {% block mainwindow %}{% endblock  %}
+        </div>
+        </div>
+    </flex-item>
+
+
+</flex>
+<div class="footer-menu-dummy">
+
+</div>

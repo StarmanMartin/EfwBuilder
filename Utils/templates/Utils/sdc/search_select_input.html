@@ -1,0 +1,63 @@
+{% load i18n %}
+{% load indexfilter %}
+
+<div style="position: relative">
+    <input type="hidden" class="search-value">
+    <div class="search-view-container">
+        <search-controller
+                data-range-size="{{ range_size }}"
+                data-range-start="{{ range|indexfilter:0 }}"
+                data-range-end="{{ range|indexfilter:1 }}"
+                data-total-count="{{ total_count }}"
+                data-remove-labels="true"
+                data-url="'{% url 'scd_view_search_select_input' model=model_name value=''%}'">
+            {% csrf_token %}
+            {% include "elements/inline_form.html" with form=search_form %}
+        </search-controller>
+    </div>
+    {% if cc != None %}
+        <button href="{{ cc }}" class="navigation-links btn btn-success add-element-searach-btn"><i class="bi bi-plus"></i></button>
+    {% endif %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">{% trans "Name" %}</th>
+            <th>
+            </th>
+        </tr>
+        </thead>
+        <tbody class="table-selected-value">
+        {% for elem in selected %}
+            <tr class="selectable selectable-{{ elem.pk }}" data-value="{{ elem.pk }}">
+                <td>{{ elem }}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-info btn-select btn-not-selected">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-select btn-selected">
+                        <i class="bi bi-dash"></i>
+                    </button>
+                </td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+        <tbody class="list-container">
+        {% for elem in instances %}
+            <tr class="selectable selectable-{{ elem.pk }}" data-value="{{ elem.pk }}">
+                <td>{{ elem }}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-info btn-select btn-not-selected">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-select btn-selected">
+                        <i class="bi bi-dash"></i>
+                    </button>
+                </td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>

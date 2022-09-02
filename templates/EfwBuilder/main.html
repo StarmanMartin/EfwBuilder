@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% load addclass %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}EFW builder{% endblock %}
+
+{% block scripts %}
+    <script type="module" src="{% static 'main.organizer.js' %}?{% random_tag 5 %}"></script>
+{% endblock %}
+
+{% block content %}
+
+
+
+
+    <g-alert-msg></g-alert-msg>
+    <global-dom-events></global-dom-events>
+
+    <nav-view data-default-controller="main-view">
+        <!-- .header-loading element will have an addition class .active while loading -->
+        <div class="header-loading">
+            <h1>{% trans 'loading...' %}</h1>
+        </div>
+        <div class="navbar-dummy"></div>
+        <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+            <div class="container-fluid navbar-flex">
+                <a class="navbar-brand navigation-links" href="{% url 'sdc_index' %}~main-view">EFW (ELN file watcher) builder</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <div class="navbar-nav">
+                        <!-- .navigation-links is automatically handled by the nav-view controller-->
+                        <a class="nav-item nav-link navigation-links"
+                           href="{% url 'sdc_index' %}~main-view">{% trans 'Home' %}</a>
+{% if user.is_staff %}
+                        <a class="nav-item nav-link navigation-links"
+                           href="{% url 'sdc_index' %}~admin-main-view">{% trans 'Admin' %}</a>
+{% endif %}
+
+                        <!-- .navigation-links is automatically handled by the nav-view controller-->
+                        <user-manager></user-manager>
+                    </div>
+                </div>
+        </nav>
+    </nav-view>
+
+{% endblock %}
+

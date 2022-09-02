@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load indexfilter %}
+
+<div>
+<div class="loader">
+    <h1>{% trans 'please Wait! Cloning git Repo...' %}</h1>
+</div>
+    <div class="search-view-container">
+        <search-controller
+                data-range-size="{{ range_size }}"
+                data-range-start="{{ range|indexfilter:0 }}"
+                data-range-end="{{ range|indexfilter:1 }}"
+                data-total-count="{{ total_count }}"
+                data-remove-labels="true"
+                data-url="'{% url 'scd_view_git_list' %}'">
+            {% csrf_token %}
+            {% include "elements/inline_form.html" with form=search_form %}
+        </search-controller>
+    </div>
+    <a href="{% url 'sdc_index' %}~admin-main-view~git-list~git-new" class="navigation-links btn btn-success add-btn" data-toggle="tooltip" data-placement="left" title="{% trans 'Add new git Repo.!' %}">
+        <i class="bi bi-folder-plus"></i>
+    </a>
+    <table class="list-container table">
+        <thead>
+        <tr>
+            <th scope="col">{% trans "Name." %}</th>
+            <th scope="col">{% trans "URL" %}</th>
+            <th scope="col">{% trans "Branch" %}</th>
+            <th scope="col">{% trans "Last pull" %}</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for elem in instances %}
+            {% include "Adminview/elements/git_row.html" with elem=elem %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,33 @@
+{% load i18n %}
+{% load indexfilter %}
+
+<div>
+    <div class="search-view-container">
+        <search-controller
+                data-range-size="{{ range_size }}"
+                data-range-start="{{ range|indexfilter:0 }}"
+                data-range-end="{{ range|indexfilter:1 }}"
+                data-total-count="{{ total_count }}"
+                data-remove-labels="true"
+                data-url="'{% url 'scd_view_efw_list' %}'">
+            {% csrf_token %}
+            {% include "elements/inline_form.html" with form=search_form %}
+        </search-controller>
+    </div>
+    <table class="list-container table">
+        <thead>
+        <tr>
+            <th scope="col">{% trans "Name." %}</th>
+            <th scope="col">{% trans "Type" %}</th>
+            <th scope="col">{% trans "Destination" %}</th>
+            <th scope="col">{% trans "System architecture" %}</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for elem in instances %}
+            {% include "Dashboard/elements/efw_row.html" with elem=elem %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

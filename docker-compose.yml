@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:5.0.10
+    ports:
+      - "6381:6379"
+    volumes:
+      - redisdata:/data
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build: .
+    expose:
+      - "8000:8000"
+    volumes:
+      - .:/code
+    env_file:
+      .env
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
+      - redis
+  nginx:
+    build: ./build_config/nginx
+    restart: always
+    volumes:
+      - ./www:/static
+    ports:
+      - 8001:80
+    depends_on:
+      - web
+volumes:
+  postgres_data:
+  redisdata:

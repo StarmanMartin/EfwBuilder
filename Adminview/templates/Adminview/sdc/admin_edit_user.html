@@ -1,0 +1,32 @@
+{% load i18n %}
+
+<div class="container">
+
+    <button class="btn btn-dark navigation-links" href="..">
+        {% trans 'Done' %}
+    </button>
+
+    <div class="row">
+        <form class="ajax-form" method="post" action="{% url 'scd_view_admin_edit_user' user_pk=form.instance.pk %}">
+            {% csrf_token %}
+            {% if is_next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+            <input type="hidden" name="is_login" value="{{ is_login }}">
+            <input type="hidden" name="_method" value="api">
+            {% include "elements/form.html" with form=form %}
+        </form>
+    </div>
+
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                <div class="sub-page-container" data-modal=".modal"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

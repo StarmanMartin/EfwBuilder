@@ -1,0 +1,20 @@
+{% load i18n %}
+
+<div class="container">
+
+    <button class="btn btn-dark navigation-links" href="..">
+        {% trans 'Done' %}
+    </button>
+
+    <div class="row">
+        <form class="ajax-form" method="post" action="{% url 'scd_view_admin_create_user' %}">
+            {% csrf_token %}
+            {% if is_next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+            <input type="hidden" name="is_login" value="{{ is_login }}">
+            <input type="hidden" name="_method" value="api">
+            {% include "elements/form.html" with form=form %}
+        </form>
+    </div>
+</div>

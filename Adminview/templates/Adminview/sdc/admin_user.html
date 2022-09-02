@@ -1,0 +1,36 @@
+{% load i18n %}
+{% load indexfilter %}
+
+<div>
+    <div class="search-view-container">
+        <search-controller
+                data-range-size="{{ range_size }}"
+                data-range-start="{{ range|indexfilter:0 }}"
+                data-range-end="{{ range|indexfilter:1 }}"
+                data-total-count="{{ total_count }}"
+                data-remove-labels="true"
+                data-url="'{% url 'scd_view_admin_user' %}'">
+            {% csrf_token %}
+            {% include "elements/inline_form.html" with form=search_form %}
+        </search-controller>
+    </div>
+    <a href="{% url 'sdc_index' %}~admin-main-view~admin-user~admin-create-user" class="navigation-links btn btn-success add-btn" data-toggle="tooltip" data-placement="left" title="{% trans 'Create User!' %}">
+        <i class="bi bi-person-plus-fill"></i>
+    </a>
+    <table class="list-container table">
+        <thead>
+        <tr>
+            <th scope="col">{% trans "Abbr." %}</th>
+            <th scope="col">{% trans "First" %}</th>
+            <th scope="col">{% trans "Last" %}</th>
+            <th scope="col">{% trans "Email" %}</th>
+            <th scope="col">{% trans "Edit" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for registered_user in instances %}
+            {% include "Adminview/elements/user_row.html" with registered_user=registered_user %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
