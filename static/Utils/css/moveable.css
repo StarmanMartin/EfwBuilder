@@ -3,6 +3,11 @@
     overflow: hidden;
 }
 
+@media (min-width: 500px) {
+    .collapse-btn {
+        display: none;
+    }
+}
 
 @media (max-width: 500px) {
     #flex-elem-left {
