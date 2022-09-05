@@ -11,14 +11,20 @@
 
 @media (max-width: 500px) {
     #flex-elem-left {
+        transition: 1s ease-in-out height;
+        overflow: hidden;
+    }
+    #flex-elem-left {
         position: absolute;
         left: 0;
         top: 0;
         width: 100vw;
-        height: fit-content;
-        display: none;
+        height: 0;
         z-index: 100;
         background-color: #e3f2fd;
+    }
+    #flex-elem-left.active {
+       height: fit-content;
         padding: 50px 10px;
     }
 }

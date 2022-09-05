@@ -16,10 +16,10 @@ export function getResizerEvents() {
 
     function toggleMenu() {
         if ($elem.hasClass('active')) {
-            $elem.removeClass('active').hide();
+            $elem.removeClass('active');
             window.removeEventListener("click", toggleMenu);
         } else {
-            $elem.addClass('active').show();
+            $elem.addClass('active');
             setTimeout(() => {
                 window.addEventListener("click", toggleMenu);
 
