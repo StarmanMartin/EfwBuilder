@@ -59,7 +59,12 @@ class GitListController extends AbstractSDC {
     onSubmit(res) {
         if (res._action === "activate") {
             this._childController.searchController[0].onChange();
+        } else if (res._action === "reload") {
+            let $html = $(res.html);
+            let $row = this.find(`.item-row-${res.pk}`);
+            app.safeReplace($row, $html);
         }
+
 
         this.onErrorSubmit();
     }

@@ -14,6 +14,11 @@
             {% include "elements/inline_form.html" with form=search_form %}
         </search-controller>
     </div>
+<br>
+<div class="alert alert-warning">
+    {% trans 'The download may take a few minutes of preparation, because the repository may still have to be cloned and the prjoject must be compiled with the entered parameters.' %}
+</div>
+    <br>
     <table class="list-container table">
         <thead>
         <tr>

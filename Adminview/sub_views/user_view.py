@@ -47,8 +47,12 @@ class AdminUser(LoginRequiredMixin, UserPassesTestMixin, SDCView):
                               msg=_f('User not editable!'),
                               request=request,
                               status=400)
-
-        if request_type == "activate":
+        if user.is_superuser:
+            return send_error(header=_f('Action failed!'),
+                              msg=_f('User is Superuser!'),
+                              request=request,
+                              status=400)
+        elif request_type == "activate":
             user.is_active = (not user.is_active)
             user.save()  #
             msg = _f("User is activated!") if user.is_active else _f("User is Deactivated!")

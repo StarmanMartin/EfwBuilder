@@ -1,7 +1,8 @@
 import os
 import shutil
 import subprocess
-from datetime import datetime
+
+from django.utils import timezone
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -44,7 +45,7 @@ class Instance(models.Model):
     duration = models.IntegerField(help_text=_("Duration in seconds, i.e., how long a file must not be changed before sent. (default 300 sec.)"), default=300)
     # cert = models.CharField(help_text=_("Path to server TLS certificate. Only needed if the server has a self signed certificate."), max_length=255, blank=True, null=True)
     architecture = models.CharField(_('System architecture'), help_text=_("Your computer architecture : either 64 bit or 32 bit (i386) "), max_length=255, choices=SYSTEM_CHOISES, default=SYSTEM_CHOISES[0][0])
-    last_update = models.DateTimeField(default=datetime.now)
+    last_update = models.DateTimeField(default=timezone.now)
     last_build = models.DateTimeField(null=True, blank=True)
 
     def get_path(self):
@@ -103,7 +104,7 @@ class Instance(models.Model):
                 raise Exception(_("Compiling failed"))
 
             shutil.rmtree(tp_src, ignore_errors=True)
-            self.last_build = datetime.now()
+            self.last_build = timezone.now()
             self.save()
         return os.path.join(tp_bin, 'efw.exe')
 
@@ -127,7 +128,7 @@ class InstanceForm(ModelForm):
             return self.cleaned_data['name']
 
     def save(self, commit=True):
-        self.instance.last_update = datetime.now()
+        self.instance.last_update = timezone.now()
         super(InstanceForm, self).save(commit)
 
     class Meta:

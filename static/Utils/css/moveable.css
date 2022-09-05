@@ -1,27 +1,42 @@
-flex {
+.movable-flex {
     display: flex;
     overflow: hidden;
 }
 
-/* flex-item > flex {
+
+@media (max-width: 500px) {
+    #flex-elem-left {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: fit-content;
+        display: none;
+        z-index: 100;
+        background-color: #e3f2fd;
+        padding: 50px 10px;
+    }
+}
+
+/* .movable-flex-item > .movable-flex {
     position: absolute;
     width: 100%;
     height: 100%;
 } */
 
-flex.h {
+.movable-flex.h {
     flex-direction: row;
 }
 
 
-flex-item {
+.movable-flex-item {
     /* display: flex; */
     /* position: relative; */
     /* overflow: hidden; */
     overflow: auto;
 }
 
-flex > flex-resizer {
+.movable-flex > .movable-flex-resizer {
     flex: 0 0 5px;
     /* background: white; */
     background-color: #00000033;
@@ -30,11 +45,11 @@ flex > flex-resizer {
 }
 
 
-flex > flex-resizer:hover {
+.movable-flex > .movable-flex-resizer:hover {
     background-color: #e3f2fd;
 }
 
-flex.h > flex-resizer {
+.movable-flex.h > .movable-flex-resizer {
     cursor: ew-resize;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='5' height='30'><path d='M2 0 v30' fill='none' stroke='black'/></svg>");
 }

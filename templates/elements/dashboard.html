@@ -1,19 +1,28 @@
-<flex class="main-view-flex-container h" style="flex: 1;">
-    <flex-item data-target="#flex-elem-right-btn" id="flex-elem-left" class="drag-ground" style="flex: 1;">
-        {% block sidebar %}{% endblock %}
-    </flex-item>
-    <flex-resizer class="resizer"></flex-resizer>
+{% load i18n %}
 
-    <flex-item style="flex: 3;">
+<button class="btn btn-outline-dark collapse-btn" type="button" >
+    {% trans 'Menu'%} <i class="bi bi-arrow-down-square"></i>
+</button>
+
+<div class="movable-flex  main-view-flex-container h">
+
+
+
+    <div data-target="#flex-elem-right-btn" id="flex-elem-left" class="movable-flex-item drag-ground" style="flex: 1;">
+        {% block sidebar %}{% endblock %}
+    </div>
+    <div class="movable-flex-resizer resizer"></div>
+
+    <div class="movable-flex-item" style="flex: 3;">
         <div class="sub-page-container">
         <div class="container">
             {% block mainwindow %}{% endblock  %}
         </div>
         </div>
-    </flex-item>
+    </div>
 
 
-</flex>
+</div>
 <div class="footer-menu-dummy">
 
 </div>

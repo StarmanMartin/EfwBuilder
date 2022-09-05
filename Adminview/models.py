@@ -2,7 +2,7 @@ import glob
 import os
 import shutil
 import subprocess
-from datetime import datetime
+from django.utils import timezone
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -49,7 +49,7 @@ class GitInstance(models.Model):
         self.save()
 
     def git_reload(self):
-        file_paths, _ = self.get_path()
+        file_paths, x = self.get_path()
         shutil.rmtree(os.path.join(file_paths), ignore_errors=True)
         os.makedirs(file_paths, exist_ok=True)
         abs_path = os.path.abspath(file_paths)
@@ -57,7 +57,7 @@ class GitInstance(models.Model):
         p_status = p.wait()
         if p_status != 0:
             raise Exception(_("Url cannot be cloned: %s") % self.url)
-        _, abs_path = self.get_path()
+        x, abs_path = self.get_path()
         p = subprocess.Popen(['git', 'checkout', self.branch], cwd=abs_path)
         p_status = p.wait()
         if p_status != 0:
@@ -69,7 +69,7 @@ class GitInstance(models.Model):
         for f in files:
             shutil.rmtree(f)
 
-        self.last_reload = datetime.now()
+        self.last_reload = timezone.now()
         self.save()
 
 

@@ -1,6 +1,6 @@
 import {AbstractSDC} from '../../../simpleDomControl/AbstractSDC.js';
 import {app} from '../../../simpleDomControl/sdc_main.js';
-import {handleResizerEvents, onResizeMovable} from '../../../Utils/libs/moveable.js';
+import {getResizerEvents, onResizeMovable} from '../../../Utils/libs/moveable.js';
 
 
 class MainViewController extends AbstractSDC {
@@ -13,10 +13,7 @@ class MainViewController extends AbstractSDC {
             '/static/Dashboard/css/sdc/main_view.css');
         this.hasSubnavView = true;
 
-        this.events.unshift({
-                '.resizer': {
-                    'mousedown': handleResizerEvents
-                },
+        this.events.unshift(getResizerEvents(),{
 
             });
     }

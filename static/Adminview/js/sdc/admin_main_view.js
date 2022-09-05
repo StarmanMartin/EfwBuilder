@@ -1,6 +1,6 @@
 import {AbstractSDC} from '../../../simpleDomControl/AbstractSDC.js';
 import {app} from '../../../simpleDomControl/sdc_main.js';
-import {handleResizerEvents, onResizeMovable} from "../../../Utils/libs/moveable.js";
+import {getResizerEvents, onResizeMovable} from "../../../Utils/libs/moveable.js";
 
 
 class AdminMainViewController extends AbstractSDC {
@@ -11,11 +11,7 @@ class AdminMainViewController extends AbstractSDC {
         this._cssUrls.push('/static/Utils/css/moveable.css',
             '/static/Adminview/css/sdc/admin_main_view.css');
 
-        this.events.unshift({
-            '.resizer': {
-                'mousedown': handleResizerEvents
-            },
-        });
+        this.events.unshift(getResizerEvents(), {});
     }
 
     //-------------------------------------------------//
@@ -42,12 +38,10 @@ class AdminMainViewController extends AbstractSDC {
     }
 
 
-
     afterShow() {
         this.onResize();
         return super.afterShow();
     }
-
 
 
     onRefresh() {

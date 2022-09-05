@@ -1,6 +1,6 @@
 export function onResizeMovable() {
     let absheight = $(window).height();
-    if(!this._restHeight) {
+    if (!this._restHeight) {
         let height = $('.div-page-container.active').innerHeight();
         let space = this.find('.footer-menu-dummy').innerHeight();
         this._restHeight = absheight - height + space;
@@ -8,6 +8,38 @@ export function onResizeMovable() {
 
 
     this.find('.main-view-flex-container').css({'min-height': `${100 / absheight * (absheight - this._restHeight)}vh`});
+}
+
+
+export function getResizerEvents() {
+    let $elem = null
+
+    function toggleMenu() {
+        if ($elem.hasClass('active')) {
+            $elem.removeClass('active').hide();
+            window.removeEventListener("click", toggleMenu);
+        } else {
+            $elem.addClass('active').show();
+            setTimeout(() => {
+                window.addEventListener("click", toggleMenu);
+
+            }, 10);
+        }
+    }
+
+    return {
+        '.resizer': {
+            'mousedown': handleResizerEvents
+        },
+        '.collapse-btn': {
+            'click': function () {
+                if ($elem === null) {
+                    $elem = this.find('#flex-elem-left');
+                }
+                toggleMenu();
+            }
+        }
+    }
 }
 
 function manageResize(md, sizeProp, posProp) {
@@ -73,10 +105,11 @@ function manageResize(md, sizeProp, posProp) {
     window.addEventListener("mouseup", onMouseUp);
 }
 
-export function handleResizerEvents(target, ev) {
+
+function handleResizerEvents(target, ev) {
     const html = document.querySelector('html');
 
-    if (target.nodeType !== 1 || target.tagName !== "FLEX-RESIZER") {
+    if (target.nodeType !== 1 || !target.classList.contains("movable-flex-resizer")) {
         return;
     }
     let parent = target.parentNode;
