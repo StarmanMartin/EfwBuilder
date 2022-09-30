@@ -5,15 +5,20 @@
 {% block sidebar %}
     <ul class="btn-layer">
         <li>
-            <a class="navigation-links" href="{% url 'sdc_index' %}/~main-view~efw-list">
+            <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~efw-list">
                 {% trans 'EFW List' %}
             </a>
         </li>
         <li>
-            <a class="navigation-links" href="{% url 'sdc_index' %}/~main-view~efw-new">
+            <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~efw-new">
                 {% trans 'New EFW' %}
             </a>
         </li>
+        <!--li>
+            <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~uml-list">
+                {% trans 'UML Elemnts' %}
+            </a>
+        </li-->
     </ul>
 {% endblock %}
 

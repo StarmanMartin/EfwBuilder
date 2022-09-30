@@ -1,0 +1,172 @@
+.uml-header {
+    position: absolute;
+    z-index: 3;
+    bottom: -5px;
+    color: #333333;
+}
+.uml-canvas {
+    background-color: #eee;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+.btn-row {
+    position: absolute;
+    top: 0;
+    right: 5px;
+    z-index: 2;
+}
+.uml-canvas.dragging {
+    cursor: move;
+    border: 1px solid red;
+}
+
+.dummy-node {
+    display: none;
+}
+
+.uml-node-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.uml-node {
+    position: absolute;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 10px;
+    overflow: auto;
+    min-height: 50px;
+    min-width: 50px;
+    width: fit-content;
+}
+
+.uml-node .text-container {
+    position: relative;
+    padding: 7px 5px;
+}
+
+.uml-node .text-container .node-text-change-area{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    font-size: 12px;
+}
+
+.node-segment-container {
+    display: flex;
+}
+
+.node-segment-container .node-segment {
+    flex: auto 1 1;
+}
+
+
+.node-segment-container .node-segment .segment-layer {
+    padding-left: 2px;
+    background-color: #4ac1f7;
+    overflow: hidden;
+}
+.node-segment-container .node-segment .segment-layer:nth-child(odd) {
+    background-color: #3dd5f3;
+
+}
+
+.node-segment-container .node-segment .segment-layer .layer-header {
+    border-bottom: 1px solid lightgray;
+}
+
+.node-segment-container .node-segment .segment-layer .layer-body {
+    border-left: 3px solid lightgray;
+    background-color: white;
+}
+
+.node-segment-container .node-segment .segment-layer .layer-body ul {
+    margin: 0;
+    padding: 6px 11px;
+}
+
+.node-segment-container .node-segment .segment-layer .layer-body ul ul {
+     padding: 2px 11px;
+ }
+
+.node-segment-container .node-segment .segment-layer .layer-body ul li {
+    font-size: 12px;
+}
+
+.uml-node h4 {
+    font-size: 12px;
+    margin: 0;
+}
+
+.node-header h4 {
+    text-align: center;
+    font-size: 14px;
+}
+
+.uml-node .segment-header {
+    padding-bottom: 0;
+}
+
+.uml-node .segment-header h4 {
+    background: wheat;
+    padding: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.uml-menu {
+    position: absolute;
+    width: 0;
+    height: 0;
+    transition: opacity 700ms ease-in-out;
+    opacity: 0;
+}
+
+.uml-menu:not(.active) {
+    top: -1000px !important;
+    left: -1000px !important;
+}
+
+
+.uml-menu.active {
+    display: block;
+    opacity: 1;
+    width: 200px;
+    height: 200px;
+}
+
+.uml-menu .btn-container {
+    margin-top: 51%;
+}
+
+.uml-menu .btn {
+    width: 150px;
+    padding: 0;
+    margin-top: 1px;
+    font-size: 12px;
+
+}
+
+.uml-menu .uml-menu-position {
+    position: absolute;
+    border-radius: 10px;
+    width: 20px;
+    height: 20px;
+    left: 90px;
+    top: 90px;
+    background-color: #4ac1f722;
+    border: #4ac1f7 2px solid;
+}
+
+.background-canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}

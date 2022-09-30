@@ -51,6 +51,7 @@
 
 .sub-page-container.active {
     opacity: 1;
+    position: relative;
 }
 
 .sub-page-container.active.loading {

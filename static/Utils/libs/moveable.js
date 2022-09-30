@@ -84,6 +84,8 @@ function manageResize(md, sizeProp, posProp) {
         next.style.flexGrow = nextGrowNew;
 
         lastPos = pos;
+
+        $(window).trigger('resize');
     }
 
     function onMouseUp(mu) {

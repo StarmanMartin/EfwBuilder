@@ -225,6 +225,7 @@ class NavViewController extends AbstractSDC {
                 let $ce = $(`<div class="${SUP_CONTAINER} ${SUP_CONTAINER}-${nav_layer} prepared active">`);
                 $ce.insertAfter($subpage);
                 if($subpage.data('modal')) {
+                    $last_container.append($subpage.closest($subpage.data('modal')));
                     $ce.data('modal', $subpage.data('modal'))
                 }
                 let a = [

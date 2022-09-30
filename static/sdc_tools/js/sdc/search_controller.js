@@ -21,13 +21,16 @@ class SearchControllerController extends AbstractSDC {
                 }
             },
             'click': {
-                '.page-number-control-btn': function (btn) {
-                    let index = $(btn).data(this.dataIdxKey);
-                    this.find('#id_range_start').val(index);
-                    this.onChange();
-                }
+                '.page-number-control-btn': this.nextPage
             }
         });
+    }
+
+    nextPage(btn, ev) {
+        ev.preventDefault();
+        let index = $(btn).data(this.dataIdxKey);
+        this.find('*[name=range_start]').val(index);
+        this.onChange();
     }
 
     //-------------------------------------------------//
@@ -123,9 +126,10 @@ class SearchControllerController extends AbstractSDC {
 
     onChange() {
         let _origenForm = this.find('.inner-form.search-form');
-        this.$form.find('.form-control').each(function () {
-            if (this.id !== '') {
-                let $elem = _origenForm.find(`#${this.id}`);
+        this.$form.find('.form-control, .hidden-form-fields input').each(function () {
+
+            if (this.name !== '') {
+                let $elem = _origenForm.find(`*[name=${this.name}]`);
                 if (this.tagName === 'SELECT') {
                     let $this = $(this);
                     $this.empty();
@@ -139,7 +143,7 @@ class SearchControllerController extends AbstractSDC {
             console.error('SearchController parent needs to implement onSearch(form)');
             return;
         }
-
+        
         this._parentController.onSearch(this.$form[0]);
     };
 

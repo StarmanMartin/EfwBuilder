@@ -128,7 +128,17 @@ export const app = {
     },
 
     submitFormAndUpdateView: (controller, form, url, method) => {
+        let token = `${controller._uuid}_`;
+        let $inner_elements = $(form).find('.inner-form *[name]');
+        $inner_elements.each(function() {
+            let $this = $(this);
+            $this.attr('name', `${token}${$this.attr('name')}`);
+        });
         let formData = new FormData(form);
+        $inner_elements.each(function() {
+            let $this = $(this);
+            $this.attr('name', `${$this.attr('name')}`.replace(token, ''));
+        });
         const p = new Promise((resolve, reject) => {
             uploadFileFormData(formData, (url || form.action), (method || form.method))
                 .then((a, b, c) => {

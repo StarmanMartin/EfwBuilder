@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<tr class="item-row-{{ elem.pk }}">
+    <th scope="row">{{ elem.name }}</th>
+    <td>
+        <div class="btn-group" role="group" aria-label="Edit uml tools">
+            <a href=".~uml-change~&dia_pk={{ elem.pk }}" class="btn btn-dark navigation-links" data-toggle="tooltip" data-placement="left" title="{% trans 'Rename Diagram!' %}">
+                <i class="bi bi-wrench-adjustable-circle"></i>
+            </a>
+            <a href=".~uml-editor~&dia_pk={{ elem.pk }}" class="btn btn-dark navigation-links" data-toggle="tooltip" data-placement="left" title="{% trans 'Edit Diagram!' %}">
+                <i class="bi bi-diagram-2"></i>
+            </a>
+        </div>
+    </td>
+</tr>

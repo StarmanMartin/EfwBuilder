@@ -15,6 +15,7 @@
             <input type="hidden" name="is_login" value="{{ is_login }}">
             <input type="hidden" name="_method" value="api">
             {% include "elements/form.html" with form=form %}
+        <button class="btn btn-success">{% trans 'Submit' %}</button>
         </form>
     </div>
 </div>
