@@ -6,7 +6,7 @@ class EfwNewController extends AbstractSDC {
 
     constructor() {
         super();
-        this.contentUrl = "/sdc_view/dashboard/efw_new"; //<efw-new></efw-new>
+        this.contentUrl = "/sdc_view/dashboard/efw_new/%(type)s"; //<efw-new data-type=""></efw-new>
         this._cssUrls.push('/static/Dashboard/css/sdc/efw_new.css');
 
         this.isAutoChange = false;

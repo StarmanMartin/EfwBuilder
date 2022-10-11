@@ -75,7 +75,9 @@ class AutoSubmitMixinController extends AbstractSDC {
     }
 
     onChange($elem) {
-        $elem.closest('.ajax-form').submit();
+        if($elem.closest('.inner-form').length === 0) {
+            $elem.closest('.ajax-form').submit();
+        }
     }
 
 }

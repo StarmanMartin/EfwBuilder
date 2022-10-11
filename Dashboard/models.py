@@ -1,9 +1,11 @@
 import os
 import shutil
 import subprocess
+import urllib.parse
 import uuid
 
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 from django.utils import timezone
 
 from django.contrib.auth import get_user_model
@@ -33,10 +35,13 @@ SYSTEM_CHOISES = (
 
 
 class Instance(models.Model):
-    name = models.CharField(help_text=_('Unique name of the EFW instance. This name cannot be changed!'), max_length=50)
+    name = models.CharField(help_text=_('Unique name of the EFW instance. This name cannot be changed!'), max_length=50,
+                            unique=True)
     user = models.CharField(help_text=_("WebDAV User"), max_length=50, default="")
     password = models.CharField(help_text=_("WebDAV Password"), max_length=100)
-    src = models.CharField(help_text=_("Source directory to monitor. Note: If you use only single \\ in the path, the build will fail. Therefore, make sure that you always use \\\\."), max_length=255)
+    src = models.CharField(help_text=_(
+        "Source directory to monitor. Note: If you use only single \\ in the path, the build will fail. Therefore, make sure that you always use \\\\."),
+                           max_length=255)
     dst = models.CharField(help_text=_("""WebDAV destination URL. If the destination is on the lsdf, the URL should be as follows:
         https://os-webdav.lsdf.kit.edu/[OE]/[inst]/projects/[PROJECTNAME]/<br>
                     [OE]-Organisationseinheit, z.B. kit.<br>
@@ -143,10 +148,40 @@ class InstanceForm(ModelForm):
         fields = ['name', 'user', 'password', 'src', 'dst', 'efw_type', 'duration', 'architecture']
 
 
+class LocalInstanceForm(ModelForm):
+
+    def __init__(self, request, *args, **kwargs):
+        super(LocalInstanceForm, self).__init__(*args, **kwargs)
+        self._hosturl = request._current_scheme_host
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            self.fields['name'].widget.attrs['readonly'] = True
+
+    def clean_name(self):
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            return instance.name
+        else:
+            return self.cleaned_data['name']
+
+    def save(self, commit=True):
+        self.instance.user = str(uuid.uuid4())
+        self.instance.password = str(uuid.uuid4())
+        name = urllib.parse.quote(self.instance.name)
+        self.instance.dst = self._hosturl + reverse('webdav', kwargs={'name': name, 'path': ''})
+        self.instance.last_update = timezone.now()
+        super(LocalInstanceForm, self).save(commit)
+
+    class Meta:
+        model = Instance
+        fields = ['name', 'src', 'efw_type', 'duration', 'architecture']
+
+
 class InstanceSearchForm(AbstractSearchForm):
     CHOICES = (
-    ('name', _('Name')), ('user', _('User')), ('efw_type', _('Type')), ('src', _('Source')), ('dst', _('Destination')),
-    ('architecture', _('Architecture')))
+        ('name', _('Name')), ('user', _('User')), ('efw_type', _('Type')), ('src', _('Source')),
+        ('dst', _('Destination')),
+        ('architecture', _('Architecture')))
     PLACEHOLDER = _('Name, Type, Source, Destination')
     DEFAULT_CHOICES = CHOICES[0][0]
     SEARCH_FIELDS = ('name', 'user', 'efw_type', 'src', 'dst', 'architecture')
@@ -182,7 +217,6 @@ def clean_vale(data, name, type='str'):
     return val
 
 
-
 class UmlElement(models.Model):
     key = models.CharField(max_length=255)
     label = models.CharField(max_length=255)
@@ -198,12 +232,12 @@ class UmlElement(models.Model):
     @classmethod
     def create_from_json(cls, parent, data):
         return cls.objects.create(
-            key= clean_vale(data, 'key'),
-            label= clean_vale(data, 'label'),
-            token= clean_vale(data, 'token'),
-            y= clean_vale(data, 'y', 'int'),
-            x= clean_vale(data, 'x', 'int'),
-            diagram= parent
+            key=clean_vale(data, 'key'),
+            label=clean_vale(data, 'label'),
+            token=clean_vale(data, 'token'),
+            y=clean_vale(data, 'y', 'int'),
+            x=clean_vale(data, 'x', 'int'),
+            diagram=parent
         )
 
 
@@ -216,10 +250,10 @@ class UmlSegment(models.Model):
     @classmethod
     def create_from_json(cls, parent, data, order):
         return cls.objects.create(
-            order= order,
-            key= clean_vale(data, 'key'),
-            label= clean_vale(data, 'label'),
-            element= parent
+            order=order,
+            key=clean_vale(data, 'key'),
+            label=clean_vale(data, 'label'),
+            element=parent
         )
 
 
@@ -229,17 +263,16 @@ class UmlLayer(models.Model):
     label = models.CharField(max_length=255)
     segment = models.ForeignKey(UmlSegment, on_delete=models.CASCADE, related_name='layers')
 
-
     def get_layers(self):
         return self.fields.filter(is_table_field=False)
 
     @classmethod
     def create_from_json(cls, parent, data, order):
         return cls.objects.create(
-            order= order,
-            key= clean_vale(data, 'key'),
-            label= clean_vale(data, 'label'),
-            segment= parent
+            order=order,
+            key=clean_vale(data, 'key'),
+            label=clean_vale(data, 'label'),
+            segment=parent
         )
 
 
@@ -250,19 +283,18 @@ class UmlField(models.Model):
     type = models.CharField(max_length=255, default='text')
     label = models.CharField(max_length=255)
     layer = models.ForeignKey(UmlLayer, on_delete=models.CASCADE, related_name='fields')
-    sub_field_from = models.ForeignKey("self", blank=True, null=True, related_name="sub_fields", on_delete=models.CASCADE)
-
-
+    sub_field_from = models.ForeignKey("self", blank=True, null=True, related_name="sub_fields",
+                                       on_delete=models.CASCADE)
 
     @classmethod
     def create_from_json(cls, parent, data, order):
         field = cls.objects.create(
-            order= order,
-            is_table_field = False,
-            field= clean_vale(data, 'field'),
-            type= str(clean_vale(data, 'type')).lower(),
-            label= clean_vale(data, 'label'),
-            layer= parent
+            order=order,
+            is_table_field=False,
+            field=clean_vale(data, 'field'),
+            type=str(clean_vale(data, 'type')).lower(),
+            label=clean_vale(data, 'label'),
+            layer=parent
         )
 
         if field.type == 'table':
@@ -270,15 +302,16 @@ class UmlField(models.Model):
             for sub in data.get('sub_fields', []):
                 order += 10
                 cls.objects.create(
-                    order= order,
-                    is_table_field = True,
-                    field= clean_vale(sub, 'field'),
-                    type= str(clean_vale(sub, 'type')).lower(),
-                    label= clean_vale(sub, 'label'),
-                    layer= parent,
-                    sub_field_from = field
+                    order=order,
+                    is_table_field=True,
+                    field=clean_vale(sub, 'field'),
+                    type=str(clean_vale(sub, 'type')).lower(),
+                    label=clean_vale(sub, 'label'),
+                    layer=parent,
+                    sub_field_from=field
                 )
         return field
+
 
 class UmlDiagramForm(ModelForm):
     class Meta:

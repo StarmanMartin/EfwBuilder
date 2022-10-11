@@ -15,6 +15,14 @@
         </search-controller>
     </div>
 <br>
+    <div class="add-btn-group">
+    <a class="navigation-links btn btn-success add-btn" href=".~efw-new~&type=instance" data-toggle="tooltip" data-placement="left" title="{% trans 'Create new EFW using external WebDAV!' %}">
+        <i class="bi bi-cloud-plus"></i>
+    </a>
+    <a class="navigation-links btn btn-success add-btn" href=".~efw-new~&type=local" data-toggle="tooltip" data-placement="left" title="{% trans 'Create new EFW using local WebDAV!' %}">
+        <i class="bi bi-server"></i>
+    </a>
+    </div>
 <div class="alert alert-warning">
     {% trans 'The download may take a few minutes of preparation, because the repository may still have to be cloned and the prjoject must be compiled with the entered parameters.' %}
 </div>

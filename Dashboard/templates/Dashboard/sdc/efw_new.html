@@ -2,8 +2,12 @@
 
 <div class="container">
 
+    <a class="btn btn-dark navigation-links" href="..">
+        {% trans 'Back' %}
+    </a>
+
     <div class="row">
-        <form class="ajax-form" method="post" action="{% url 'scd_view_efw_new' %}">
+        <form class="ajax-form" method="post" action="{% url 'scd_view_efw_new' type=form_type%}">
             {% csrf_token %}
             <input type="hidden" name="_method" value="api">
             {% include "elements/form.html" with form=form %}

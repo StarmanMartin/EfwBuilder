@@ -5,3 +5,5 @@
 /db.sqlite3
 /package-lock.json
 /projects/builds/
+/data_webdav/
+/djangodav-python3/

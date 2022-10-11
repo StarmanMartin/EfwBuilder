@@ -24,7 +24,7 @@ class ChangeSyncMixinController extends AbstractSDC {
     //-------------------------------------------------//
     // Lifecycle handler                               //
     // - onInit (tag parameter)                        //
-    // - onLoad (DOM not set)                          //
+    // - onLoad (DOM not set)                   query_set       //
     // - willShow  (DOM set)                           //
     // - afterShow  (recalled on reload)               //
     //-------------------------------------------------//
@@ -105,8 +105,8 @@ class ChangeSyncMixinController extends AbstractSDC {
             this._timer = null;
         }
 
-        if(!this._lastTimeChanged !== elem.name) {
-            this.onChange($(elem));
+        if(this._lastTimeChanged !== elem.name) {
+            this._onChange($(elem));
             this._isChanged = true;
             this._lastTimeChanged = '';
         }
@@ -125,11 +125,15 @@ class ChangeSyncMixinController extends AbstractSDC {
         this._isChanged = false;
         this._timer = setTimeout(()=> {
             if (!this._isChanged) {
-                this.onChange($(elem));
+                this._onChange($(elem));
                 this._lastTimeChanged = elem.name;
             }
         }, 1000);
 
+    }
+
+    _onChange($elm) {
+        return this.onChange($elm);
     }
 }
 

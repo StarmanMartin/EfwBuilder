@@ -5,6 +5,7 @@ from django.db import transaction
 from django.http import HttpResponseNotFound, HttpResponse
 from django.http.response import HttpResponseServerError
 
+from WebDAV.resources import ReadFSDavResource
 from sdc_tools.django_extension.views import SDCView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,7 +14,7 @@ from django.utils.translation import gettext as _f
 from django.utils.translation import gettext_lazy as _
 from sdc_tools.django_extension.response import send_error, send_success, send_redirect
 from Dashboard.models import InstanceSearchForm, Instance, InstanceForm, UmlSearchForm, UmlDiagram, UmlDiagramForm, \
-    UmlElement, UmlSegment, UmlLayer, UmlField
+    UmlElement, UmlSegment, UmlLayer, UmlField, LocalInstanceForm
 
 
 class MainView(LoginRequiredMixin, SDCView):
@@ -28,20 +29,30 @@ class EfwNew(LoginRequiredMixin, SDCView):
     raise_exception = True
     template_name='Dashboard/sdc/efw_new.html'
 
-    def post_api(self, request, *args, **kwargs):
-        form = InstanceForm(data=request.POST)
+    def post_api(self, request, type, *args, **kwargs):
+        if type == 'instance':
+            form = InstanceForm(data=request.POST)
+        elif type == 'local':
+            form = LocalInstanceForm(request=request, data=request.POST)
+        else:
+            form = None
 
-        if form.is_valid():
+        if form is not None and form.is_valid():
             form.save()
             return send_redirect(back=True, header=_f('Success!!'),
                                 msg=_f('New Instance is saved!'))
 
-        return send_error(self.template_name, status=403, request=request, context={'form': form},
+        return send_error(self.template_name, status=403, request=request, context={'form': form, 'form_type': type},
                           header=_f('Upps!!'),
                           msg=_f('Please check your details.'))
 
-    def get_content(self, request, *args, **kwargs):
-        context = {'form': InstanceForm()}
+    def get_content(self, request, type, *args, **kwargs):
+        context = {'form_type': type}
+        if type == 'instance':
+            context['form'] = InstanceForm()
+        elif type == 'local':
+            context['form'] = LocalInstanceForm(request)
+
         return render(request, self.template_name, context)
 
 
@@ -226,3 +237,10 @@ class UmlList(LoginRequiredMixin, SDCView):
         form.is_valid()
         return search.handle_search_form(UmlDiagram.objects, form, filter_dict=form.generate_filte(),
                                          range=self.range_size)
+
+class FileTree(SDCView):
+    template_name='Dashboard/sdc/file_tree.html'
+
+    def get_content(self, request, *args, **kwargs):
+        context = {'root': ReadFSDavResource("/")}
+        return render(request, self.template_name, context)

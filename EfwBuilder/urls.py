@@ -19,6 +19,8 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.i18n import JavaScriptCatalog
 
+from WebDAV.view import DavView, DavDownloadView
+
 urlpatterns = [
     re_path('sdc_view/sdc_tools/', include('sdc_tools.sdc_urls')),
     re_path('sdc_view/sdc_user/', include('sdc_user.sdc_urls')),
@@ -29,6 +31,8 @@ urlpatterns = [
     path('sdc_view/logedout/', include('Logedout.sdc_urls')),
 
     path('admin/', admin.site.urls),
+    re_path('download/webdav(?P<path>.*)', DavDownloadView.as_view(), name="download_webdav"),
+    re_path('webdav/(?P<name>[^/]*)/(?P<path>.*)', DavView.as_view(), name="webdav"),
 ]
 
 def main_index(request):

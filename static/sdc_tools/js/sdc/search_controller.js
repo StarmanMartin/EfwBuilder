@@ -143,7 +143,7 @@ class SearchControllerController extends AbstractSDC {
             console.error('SearchController parent needs to implement onSearch(form)');
             return;
         }
-        
+
         this._parentController.onSearch(this.$form[0]);
     };
 

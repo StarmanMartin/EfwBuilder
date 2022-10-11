@@ -1,0 +1,38 @@
+.element {
+    margin-left: 15px;
+}
+
+.element .element {
+    display: none;
+}
+
+.element .icon-container {
+    display: inline-block;
+}
+
+.element.is_collection {
+    cursor: pointer;
+}
+
+.element:not(.is_collection) {
+    cursor: default;
+}
+
+.element-name {
+    display: inline-block;
+}
+
+.element-name .download-btn {
+    padding: 0 5px;
+    display: none;
+    font-size: 12px;
+    margin-left: 20px;
+}
+
+.element-name:hover > .download-btn {
+    display: inline-block;
+}
+
+.search-container {
+    margin: 10px 20px;
+}

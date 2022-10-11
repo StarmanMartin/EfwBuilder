@@ -18,8 +18,13 @@
 
 .page-number-control {
     position: absolute;
-    bottom: 0;
-    left: 45%
+    bottom: -10px;
+    left: 45%;
+    opacity: .5;
+}
+
+.page-number-control:hover {
+    opacity: 1;
 }
 
 .no-label .label-container {
