@@ -1,0 +1,24 @@
+<div class="container">
+    <h2>Welcome to the EFW manager</h2>
+    <p>Full documentation <a target="_blank" href="https://www.chemotion.net/chemotionsaurus/docs/eln/devices/device_configuration">here</a></p>
+    <p>This server-side application allows you to monitor and organise the data transmission of devices integrated in
+        your ELN Chemotion instance (for more infos click <a
+                href="https://www.chemotion.net/chemotionsaurus/docs/category/device-integration"
+                target="_blank">here</a> ). With the <a href="https://github.com/ComPlat/ELN_file_watcher"
+                                                        target="_blank">EFW (ELN File Watcher)</a> manager, EFW
+        instances adapted to the requirements can be generated quickly and simply. These instances can then be installed
+        on the target system in just a few steps. In addition, this server provides a data storage unit with an
+        interface to receive data from your target systems. These data are then automatically entered in the ELN.</p>
+    <h3>How to install EFW</h3>
+    <p>The following section introduces the installation of the EFW. Note that the installation is <b>only</b> intended for Windows devices.</p>
+    <ol>
+        <li><b>Generate EFW instance:</b> <p>There will be a distinction in 2 cases how to generate an EFW instance. The first case is a <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~efw-list~efw-new~&type=instance">new external EFW</a> instance adapted to external WebDAV server. The second case is a <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~efw-list~efw-new~&type=local">new internal EFW</a> instance adapted to this WebDAV server.</p></li>
+        <li><b>Install EFW instance:</b> <p>In both cases of the previous step the installation on the target system is the same. However, the installation is simple but require administration rights.</p>
+        <ol>
+            <li>Make a directory "C:\Program Files\eln_exporter"</li>
+            <li>Copy the (on this server generated) <b>efw.exe</b> into "C:\Program Files\file_exporter"</li>
+            <li>Copy the <a target="_blank" href="{% url 'file_exporter_task.vbs' %}">file_exporter_task.vbs</a> into the startup directory.<p style="margin-left: 5px">Hint: Press <b>Windows Key + R</b> to open run and type <b>shell:startup</b>. This will open startup directory</p></li>
+        </ol></li>
+    </ol>
+
+</div>

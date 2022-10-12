@@ -1,4 +1,11 @@
-from django.http import Http404
+import datetime
+from urllib.parse import quote
+
+from django.http import Http404, HttpResponse
+from django.utils.encoding import smart_str
+from django.utils.http import http_date
+from django.views import View
+
 from sdc_tools.django_extension.views import SDCView
 from django.shortcuts import render
 
@@ -60,3 +67,25 @@ class SearchSelectInput(SDCView):
         else:
             ctx['selected'] = ModelObj.objects.filter(pk__in=value.split(','))
         return ctx
+
+
+class DownloadVbs(View):
+
+    filename = 'file_exporter_task.vbs'
+    file_content = b'''Dim WinScriptHost
+Set WinScriptHost = CreateObject("WScript.Shell")
+WinScriptHost.Run Chr(34) & "C:\Program Files\eln_exporter\efw.exe" & Chr(34), 0
+Set WinScriptHost = Nothing
+'''
+
+
+    def get(self, request):
+
+        response = HttpResponse(self.file_content)
+        response['X-SendFile'] = quote('/sdc_view/utils/download/file_exporter_task.vbs')
+        response['Content-Type'] = 'Text/vbscript'
+        response['Content-Length'] = len(self.file_content)
+        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(self.filename)
+        response['Last-Modified'] = datetime.datetime.now()
+
+        return response

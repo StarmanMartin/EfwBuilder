@@ -14,10 +14,7 @@
     <div class="movable-flex-resizer resizer"></div>
 
     <div class="movable-flex-item" style="flex: 3;">
-        <div class="sub-page-container">
-        <div class="container">
-            {% block mainwindow %}{% endblock  %}
-        </div>
+        <div class="sub-page-container" data-default-controller="{% block default-controller %}{% endblock  %}">
         </div>
     </div>
 

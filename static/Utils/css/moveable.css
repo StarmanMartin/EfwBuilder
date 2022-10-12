@@ -118,5 +118,11 @@
 
 
 .btn-layer li a:hover {
+    background-color: #e3f2fd33;
+    padding-left: 35px;
+}
+
+
+.btn-layer li a.active {
     background-color: #e3f2fd;
 }

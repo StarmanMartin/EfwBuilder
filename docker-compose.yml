@@ -33,10 +33,12 @@ services:
   nginx:
     build: ./build_config/nginx
     restart: always
+    env_file:
+      .env
     volumes:
       - ./www:/static
     ports:
-      - "80:80"
+      - "${PORT}:80"
     depends_on:
       - web
 volumes:

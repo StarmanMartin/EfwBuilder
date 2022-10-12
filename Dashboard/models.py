@@ -150,9 +150,9 @@ class InstanceForm(ModelForm):
 
 class LocalInstanceForm(ModelForm):
 
-    def __init__(self, request, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(LocalInstanceForm, self).__init__(*args, **kwargs)
-        self._hosturl = request._current_scheme_host
+        self._hosturl = settings.WEBDAV_HOST
         instance = getattr(self, 'instance', None)
         if instance and instance.pk:
             self.fields['name'].widget.attrs['readonly'] = True

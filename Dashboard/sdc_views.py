@@ -33,7 +33,7 @@ class EfwNew(LoginRequiredMixin, SDCView):
         if type == 'instance':
             form = InstanceForm(data=request.POST)
         elif type == 'local':
-            form = LocalInstanceForm(request=request, data=request.POST)
+            form = LocalInstanceForm(data=request.POST)
         else:
             form = None
 
@@ -51,7 +51,7 @@ class EfwNew(LoginRequiredMixin, SDCView):
         if type == 'instance':
             context['form'] = InstanceForm()
         elif type == 'local':
-            context['form'] = LocalInstanceForm(request)
+            context['form'] = LocalInstanceForm()
 
         return render(request, self.template_name, context)
 
@@ -244,3 +244,9 @@ class FileTree(SDCView):
     def get_content(self, request, *args, **kwargs):
         context = {'root': ReadFSDavResource("/")}
         return render(request, self.template_name, context)
+
+class BasicInfo(SDCView):
+    template_name='Dashboard/sdc/basic_info.html'
+
+    def get_content(self, request, *args, **kwargs):
+        return render(request, self.template_name)

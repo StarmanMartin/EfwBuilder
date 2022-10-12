@@ -6,6 +6,7 @@ from . import sdc_views
 
 urlpatterns = [
     # scd view below
+    path('basic_info', sdc_views.BasicInfo.as_view(), name='scd_view_basic_info'),
     path('file_tree', sdc_views.FileTree.as_view(), name='scd_view_file_tree'),
     path('uml_change/<int:dia_pk>', sdc_views.UmlChange.as_view(), name='scd_view_uml_change'),
     path('uml_list', sdc_views.UmlList.as_view(), name='scd_view_uml_list'),

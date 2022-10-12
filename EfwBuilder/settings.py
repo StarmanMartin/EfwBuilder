@@ -26,13 +26,21 @@ SECRET_KEY = 'django-insecure-mb2dlfw1jc#&fpi@=(-0ls$%_+l1o+f+ks$y9wuwl7q1qj+h_b
 DEBUG =  os.environ.get('FLAVOR') != 'production'
 
 if not DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1']  + os.environ.get('HOST').split(',')
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST').split(',')
     PORT = os.environ.get('PORT') or ""
-    CSRF_TRUSTED_ORIGINS = ['http://%s%s' % (x, PORT) for x in os.environ.get('HOST').split(',')]
+    PORT = PORT.strip(':')
+    if PORT == "80":
+        PORT = ""
+    else:
+        PORT = ":%s" % PORT
+    CSRF_TRUSTED_ORIGINS = ['http://%s%s' % (x, PORT) for x in os.environ.get('ALLOWED_HOST').split(',')] + ['https://%s%s' % (x, PORT) for x in os.environ.get('ALLOWED_HOST').split(',')]
+    WEBDAV_HOST = "%s%s" % (os.environ.get('WEBDAV_HOST'), PORT)
+else:
+    WEBDAV_HOST = "127.0.0.1:8001"
 
 # Application definition
 
-VERSION=0.0
+VERSION=0.1
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -52,8 +60,7 @@ INSTALLED_APPS = [
 ]
 
 INTERNAL_IPS = (
-    '127.0.0.1',
-    '192.168.1.23',
+    '127.0.0.1'
 )
 
 if DEBUG:

@@ -1,3 +1,4 @@
+import {} from "./sdc/basic_info.js"
 import {} from "./sdc/file_tree.js"
 import {} from "./sdc/uml_change.js"
 import {} from "./sdc/uml_list.js"

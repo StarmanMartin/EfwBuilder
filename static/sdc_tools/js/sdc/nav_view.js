@@ -93,7 +93,7 @@ class NavViewController extends AbstractSDC {
             }
 
             let data = self.handleUrl($button.attr('href'));
-            $button.addClass(`nav-family-${data.path[0]}`);
+            $button.addClass(`nav-family-${data.path.at(-1)}`);
         });
     }
 
@@ -129,10 +129,10 @@ class NavViewController extends AbstractSDC {
         let $button;
         if (button_selector) {
             this._currentButton = button_selector;
-            $button = this.find(button_selector);
-        } else {
-            $button = this.find(this._currentButton);
         }
+
+        $button = this.find(this._currentButton.join(', '));
+
 
         if ($button) {
             this.find('.navigation-links').removeClass('active');
@@ -187,10 +187,7 @@ class NavViewController extends AbstractSDC {
         let pathname = totalPathName.split('~&') || [`/~${this.defaultController}`];
         let path = pathname[0].split('~');
 
-
-        let contentName = path[0];
-        let buttonSelector = `.navigation-links.nav-family-${contentName}`;
-
+        let buttonSelector = path.map((c)=> `.navigation-links.nav-family-${c}`);
 
         return {
             contentName: totalPathName,
@@ -334,6 +331,16 @@ class NavViewController extends AbstractSDC {
         return routeArgs;
     }
 
+    _manageDefault(container) {
+       const $subContainer = container.find('.sub-page-container');
+       const df =  $subContainer.data('default-controller');
+       if(df) {
+           let data = this.handleUrl(`.~${df}`);
+           this.updateButton(data.buttonSelector);
+           history.pushState(data.contentName, container, data.url);
+       }
+    }
+
     navigateToPage(target, args) {
         let argsAsString = "";
         this._originTarget = target;
@@ -363,6 +370,7 @@ class NavViewController extends AbstractSDC {
             viewObj.container[1].removeClass('active loading').addClass('empty');
             viewObj.container[0].addClass('active').removeClass('empty loading');
             let controller = app.getController(viewObj.container[0].find(' > ._sdc_controller_'));
+            this._manageDefault(viewObj.container[0]);
             if (typeof controller.onBack === 'function') {
                 controller.onBack();
             }
@@ -388,18 +396,20 @@ class NavViewController extends AbstractSDC {
         let idx = this._last_view.length - 1;
         let ce = this._getViewContainer(idx);
         ce.update();
-
         $('.tooltip.fade.show').remove();
         if (this._originTarget.length !== this._last_view.length) {
             let data = this.handleUrl(window.location.pathname);
+
             if (data.path.length > 1) {
                 let $button = this.updateButton(data.buttonSelector);
                 history.pushState(data.contentName, $button, data.url);
             }
+        } else {
+            this._manageDefault(ce[0]);
+            setTimeout(() => {
+                this.$container.find('.header-loading').removeClass('active');
+            }, 100);
         }
-        setTimeout(() => {
-            this.$container.find('.header-loading').removeClass('active');
-        }, 100);
     }
 
     login(pk) {
