@@ -2,7 +2,7 @@ FROM python:3.10
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get --assume-yes upgrade
 
 RUN apt --assume-yes install git nodejs npm zip gzip tar
 
