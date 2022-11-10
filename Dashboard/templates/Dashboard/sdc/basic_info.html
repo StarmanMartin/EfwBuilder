@@ -10,15 +10,31 @@
         on the target system in just a few steps. In addition, this server provides a data storage unit with an
         interface to receive data from your target systems. These data are then automatically entered in the ELN.</p>
     <h3>How to install EFW</h3>
-    <p>The following section introduces the installation of the EFW. Note that the installation is <b>only</b> intended for Windows devices.</p>
+    <p>The following section introduces the installation of the EFW. Note that the installation is <b>only</b> intended for Windows x64 and i386 devices and Linux x64 devices.</p>
     <ol>
-        <li><b>Generate EFW instance:</b> <p>There will be a distinction in 2 cases how to generate an EFW instance. The first case is a <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~efw-list~efw-new~&type=instance">new external EFW</a> instance adapted to external WebDAV server. The second case is a <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~efw-list~efw-new~&type=local">new internal EFW</a> instance adapted to this WebDAV server.</p></li>
-        <li><b>Install EFW instance:</b> <p>In both cases of the previous step the installation on the target system is the same. However, the installation is simple but require administration rights.</p>
+        <li><b>Generate EFW instance:</b> <p>AIn the lower right corner of the EFW list you will find a green button. With this button you can create a <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~efw-list~efw-new~&type=instance">new EFW</a> instance adapted to an external WebDAV or SFTP server.</p></li>
+        <li><b>Download EFW instance:</b> <p>After you have created a new Instance you can download the executable in the EFW list.</p>
+        <li><b>Install EFW instance:</b> <p>The installation is simple but require administration rights.</p>
         <ol>
             <li>Make a directory "C:\Program Files\eln_exporter"</li>
             <li>Copy the (on this server generated) <b>efw.exe</b> into "C:\Program Files\file_exporter"</li>
             <li>Copy the <a target="_blank" href="{% url 'file_exporter_task.vbs' %}">file_exporter_task.vbs</a> into the startup directory.<p style="margin-left: 5px">Hint: Press <b>Windows Key + R</b> to open run and type <b>shell:startup</b>. This will open startup directory</p></li>
         </ol></li>
+        <li><b>(SPECIAL CASE) Install EFW with SFTP on Windows XP:</b> <p> As above the installation requires administration rights. The "Download" button leads to a zip file and not only to an executable file. This zipped file contains the executable file and WinSCP. </p>
+            <ol>
+                <li>Make a directory "C:\Program Files\eln_exporter"</li>
+                <li>Unzip the downloaded file <b>efw_sftp_winxp.zip</b></li>
+                <li>Copy the <b>efw.exe</b>, <b>WinSCP.exe</b> andt <b>WinSCP.com</b> into "C:\Program Files\file_exporter"</li>
+                <li>Copy the <a target="_blank" href="{% url 'file_exporter_task.vbs' %}">file_exporter_task.vbs</a> into the startup directory.<p style="margin-left: 5px">Hint: Press <b>Windows Key + R</b> to open run and type <b>shell:startup</b>. This will open startup directory</p></li>
+            </ol>
+        </li>
+        <li><b>Install EFW on LINUX:</b> <p> As above the installation requires administration rights. This installation description works only for <b>systemd</b></p>
+            <ol>
+                <li>Make a directory "/opt/file_exporter"</li>
+                <li>Copy the <b>efw</b> into "/opt/file_exporter/"</li>
+                <li>Download <a target="_blank" href="{% url 'file_efw.service' %}">efw.service</a>. Edit the file and enter the correct username. Copy it into /etc/systemd/system/efw.service. Run <b>systemctl start efw</b> to start it and <b>systemctl enable efw</b> to automatically get it to start on boot.</li>
+            </ol>
+        </li>
     </ol>
 
 </div>

@@ -3,13 +3,15 @@ from sdc_tools.django_extension.views import SDCView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.utils.translation import gettext as _f
-from Adminview.models import GitInstanceSearchForm, GitInstance, GitInstanceForm
+from Adminview.models import GitInstanceSearchForm, GitInstance, GitInstanceForm, ElnConnectionForm, ElnConnection
 from sdc_tools.django_extension.response import send_error, send_success, send_redirect
 from sdc_tools.django_extension import search
 
 from Adminview.sub_views import admin_user_test
+from Adminview.sub_views.user_view import AdminUser, AdminEditUser, AdminPasswordChange, AdminCreateUser
 
 UserModel = get_user_model()
+
 
 def get_user(request, pk):
     pk = int(pk)
@@ -21,6 +23,7 @@ def get_user(request, pk):
         return UserModel.objects.get(pk=pk, is_superuser=False)
     except:
         return None
+
 
 class AdminMainView(LoginRequiredMixin, UserPassesTestMixin, SDCView):
     raise_exception = True
@@ -49,7 +52,7 @@ class GitList(LoginRequiredMixin, UserPassesTestMixin, SDCView):
 
         request_type = request.POST.get("_action", None)
         try:
-            user = GitInstance.objects.get(pk= request.POST.get("pk", -1))
+            user = GitInstance.objects.get(pk=request.POST.get("pk", -1))
         except:
             return send_error(header=_f('Action failed!'),
                               msg=_f('User not editable!'),
@@ -99,7 +102,7 @@ class GitList(LoginRequiredMixin, UserPassesTestMixin, SDCView):
 
 
 class GitNew(LoginRequiredMixin, UserPassesTestMixin, SDCView):
-    template_name='Adminview/sdc/git_new.html'
+    template_name = 'Adminview/sdc/git_new.html'
     raise_exception = True
 
     def test_func(self):
@@ -122,8 +125,8 @@ class GitNew(LoginRequiredMixin, UserPassesTestMixin, SDCView):
         return render(request, self.template_name, context)
 
 
-class GitEdit(LoginRequiredMixin, UserPassesTestMixin,SDCView):
-    template_name='Adminview/sdc/git_edit.html'
+class GitEdit(LoginRequiredMixin, UserPassesTestMixin, SDCView):
+    template_name = 'Adminview/sdc/git_edit.html'
     raise_exception = True
 
     def test_func(self):
@@ -162,3 +165,5 @@ class GitEdit(LoginRequiredMixin, UserPassesTestMixin,SDCView):
         form = GitInstanceForm(instance=user)
         context = {'form': form}
         return render(request, self.template_name, context)
+
+

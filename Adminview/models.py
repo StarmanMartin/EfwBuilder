@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.forms import ModelForm
+from django.forms import ModelForm, CharField, PasswordInput
 from django.utils.translation import gettext_lazy as _
 from sdc_tools.django_extension.forms import AbstractSearchForm
 
@@ -106,3 +106,15 @@ class GitInstanceSearchForm(AbstractSearchForm):
 
     def generate_filte(self):
         pass
+
+class ElnConnection(models.Model):
+    url = models.URLField(_('Eln connection!'))
+    active = models.BooleanField()
+    token = models.CharField(default=None, null=True, blank=True, max_length=255)
+
+class ElnConnectionForm(ModelForm):
+    user = CharField(help_text=_('Enter admin login info.'))
+    password = CharField(widget=PasswordInput())
+    class Meta:
+        fields = ('url', 'user', 'password',)
+        model = ElnConnection

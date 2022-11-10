@@ -1,11 +1,7 @@
 import os
 import shutil
 import subprocess
-import urllib.parse
-import uuid
 
-from django.core.exceptions import ValidationError
-from django.urls import reverse
 from django.utils import timezone
 
 from django.contrib.auth import get_user_model
@@ -30,24 +26,35 @@ TYPE_CHOISES = (
 
 SYSTEM_CHOISES = (
     ('win_i386', _('Windows i386')),
-    ('win_64', _('Windows 64 Bit'))
+    ('win_64', _('Windows 64 Bit')),
+    ('ubuntu_64', _('Ubuntu 64 Bit'))
+)
+
+TRANSFER_CHOISES = (
+    ('webdav', _('WebDAV')),
+    ('sftp', _('SFTP')),
 )
 
 
 class Instance(models.Model):
     name = models.CharField(help_text=_('Unique name of the EFW instance. This name cannot be changed!'), max_length=50,
                             unique=True)
-    user = models.CharField(help_text=_("WebDAV User"), max_length=50, default="")
-    password = models.CharField(help_text=_("WebDAV Password"), max_length=100)
+    user = models.CharField(help_text=_("WebDAV or STFP User"), max_length=50, default="")
+    password = models.CharField(help_text=_("WebDAV or STFP Password"), max_length=100)
+    transfer = models.CharField(_('Transfer protocol'),
+                               help_text=_("You can either use the WebDAV protocol or the SFTP protocol"),
+                               max_length=255, choices=TRANSFER_CHOISES, default=TRANSFER_CHOISES[0][0])
     src = models.CharField(help_text=_(
         "Source directory to monitor. Note: If you use only single \\ in the path, the build will fail. Therefore, make sure that you always use \\\\."),
                            max_length=255)
-    dst = models.CharField(help_text=_("""WebDAV destination URL. If the destination is on the lsdf, the URL should be as follows:
-        https://os-webdav.lsdf.kit.edu/[OE]/[inst]/projects/[PROJECTNAME]/<br>
-                    [OE]-Organisationseinheit, z.B. kit.<br>
-                    [inst]-Institut-Name, z.B. ioc, scc, ikp, imk-asf etc.<br>
-                    [USERNAME]-User-Name z.B. xy1234, bs_abcd etc.<br>
-                    [PROJRCTNAME]-Projekt-Name"""), max_length=255)
+    dst = models.CharField(help_text=_("""WebDAV or SFTP destination URL. If the destination is on the lsdf, the URL should be as follows:<br>
+        <span style="margin-left: 20px; font-weight: 800;">SFTP</span>: os-login.lsdf.kit.edu/[OE]/[inst]/projects/[PROJECT_PATH]/<br>
+        <span style="margin-left: 20px; font-weight: 800;">WebDAV</span>: https://os-webdav.lsdf.kit.edu/[OE]/[inst]/projects/[PROJECT_PATH]/<br>
+
+                    <span style="margin-left: 30px;">[OE]-Organisationseinheit, z.B. kit.</span><br>
+                    <span style="margin-left: 30px;">[inst]-Institut-Name, z.B. ioc, scc, ikp, imk-asf etc.</span><br>
+                    <span style="margin-left: 30px;">[USERNAME]-User-Name z.B. xy1234, bs_abcd etc.</span><br>
+                    <span style="margin-left: 30px;">[PROJECT_PATH]-Path (directory) within the LSDF</span>"""), max_length=255)
     efw_type = models.CharField(_('Type'), help_text=_(
         "Type must be 'file', 'folder' or 'zip'. The 'file' option means that each file is handled individually, the 'folder' option means that entire folders are transmitted only when all files in them are ready. The option 'zip' sends a folder zipped, only when all files in a folder are ready."),
                                 max_length=255, choices=TYPE_CHOISES)
@@ -72,8 +79,13 @@ class Instance(models.Model):
                         "user": self.user,
                         "password": self.password,
                         "duration": self.duration,
+                        "tType": self.transfer,
+                        "name": self.name,
                         "crt": "None",
                         "type": self.efw_type})
+
+    def only_exe(self):
+        return self.architecture != 'win_i386' or self.transfer != 'sftp'
 
     def build(self):
         git = GitInstance.objects.get(is_active=True)
@@ -84,6 +96,11 @@ class Instance(models.Model):
         tp = self.get_path()
         tp_bin = os.path.abspath(os.path.join(tp, 'bin'))
         tp_src = os.path.abspath(os.path.join(tp, 'src'))
+
+        if self.architecture != 'ubuntu_64':
+            filename = 'efw.exe'
+        else:
+            filename = 'efw'
 
         if self.last_build is None or self.last_build <= git.last_reload or self.last_update > self.last_build:
             shutil.rmtree(tp, ignore_errors=True)
@@ -105,23 +122,34 @@ class Instance(models.Model):
                         raise Exception(_("Compiling failed"))
             os.makedirs(tp_bin, exist_ok=True)
             my_env = os.environ.copy()
-            my_env["GOOS"] = settings.GOOS
             my_env["GOROOT"] = settings.GOROOT
             my_env["GOPATH"] = settings.GOPATH
+            if self.architecture != 'ubuntu_64':
+                my_env["GOOS"] = settings.GOOS
+
             if self.architecture == 'win_i386':
                 my_env['GOARCH'] = '386'
+                go_tool = "go1.10"
+            else:
+                go_tool = os.path.join(settings. GOROOT, "bin/go")
+                p = subprocess.Popen([go_tool, "mod", "download"], env=my_env, cwd=tp_src)
+                p_status = p.wait()
+                print(p, p_status)
+                if p_status != 0:
+                    raise Exception(_("Download mod failed"))
 
             p = subprocess.Popen(
-                [os.path.join(settings.GOROOT, "bin/go"), "build", "-o", os.path.join(tp_bin, 'efw.exe')], env=my_env,
+                [go_tool, "build", "-o", os.path.join(tp_bin, filename)], env=my_env,
                 cwd=tp_src)
             p_status = p.wait()
+            print(p, p_status)
             if p_status != 0:
                 raise Exception(_("Compiling failed"))
 
             shutil.rmtree(tp_src, ignore_errors=True)
             self.last_build = timezone.now()
             self.save()
-        return os.path.join(tp_bin, 'efw.exe')
+        return os.path.join(tp_bin, filename)
 
 
 class InstanceForm(ModelForm):
@@ -145,36 +173,9 @@ class InstanceForm(ModelForm):
 
     class Meta:
         model = Instance
-        fields = ['name', 'user', 'password', 'src', 'dst', 'efw_type', 'duration', 'architecture']
+        fields = ['name', 'transfer', 'user', 'password', 'src', 'dst', 'efw_type', 'duration', 'architecture']
 
 
-class LocalInstanceForm(ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super(LocalInstanceForm, self).__init__(*args, **kwargs)
-        self._hosturl = settings.WEBDAV_HOST
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            self.fields['name'].widget.attrs['readonly'] = True
-
-    def clean_name(self):
-        instance = getattr(self, 'instance', None)
-        if instance and instance.pk:
-            return instance.name
-        else:
-            return self.cleaned_data['name']
-
-    def save(self, commit=True):
-        self.instance.user = str(uuid.uuid4())
-        self.instance.password = str(uuid.uuid4())
-        name = urllib.parse.quote(self.instance.name)
-        self.instance.dst = self._hosturl + reverse('webdav', kwargs={'name': name, 'path': ''})
-        self.instance.last_update = timezone.now()
-        super(LocalInstanceForm, self).save(commit)
-
-    class Meta:
-        model = Instance
-        fields = ['name', 'src', 'efw_type', 'duration', 'architecture']
 
 
 class InstanceSearchForm(AbstractSearchForm):
@@ -189,131 +190,3 @@ class InstanceSearchForm(AbstractSearchForm):
     def generate_filte(self):
         pass
 
-
-class UmlSearchForm(AbstractSearchForm):
-    CHOICES = (('name', _('Name')), ('elements__label', _('Element label')))
-    PLACEHOLDER = _('Name, Element label')
-    DEFAULT_CHOICES = CHOICES[0][0]
-    SEARCH_FIELDS = ('name', 'elements__label')
-
-    def generate_filte(self):
-        pass
-
-
-class UmlDiagram(models.Model):
-    name = models.CharField(max_length=255)
-
-
-def clean_vale(data, name, type='str'):
-    val = data.get(name, None)
-    if val is None:
-        raise ValidationError(_('%s must be set!') % name)
-    if type == 'str':
-        if len(val) == 0:
-            raise ValidationError(_('%s must be set!') % name)
-        return str(val)
-    if type == 'int':
-        return int(val)
-    return val
-
-
-class UmlElement(models.Model):
-    key = models.CharField(max_length=255)
-    label = models.CharField(max_length=255)
-    token = models.CharField(max_length=255, default=uuid.uuid4)
-    x = models.IntegerField(default=0)
-    y = models.IntegerField(default=0)
-    diagram = models.ForeignKey(UmlDiagram, on_delete=models.CASCADE, related_name='elements')
-    extends = models.ManyToManyField("self", symmetrical=False, related_name='extended_by')
-
-    def gat_all_related(self):
-        return ','.join(self.extends.values_list('token', flat=True))
-
-    @classmethod
-    def create_from_json(cls, parent, data):
-        return cls.objects.create(
-            key=clean_vale(data, 'key'),
-            label=clean_vale(data, 'label'),
-            token=clean_vale(data, 'token'),
-            y=clean_vale(data, 'y', 'int'),
-            x=clean_vale(data, 'x', 'int'),
-            diagram=parent
-        )
-
-
-class UmlSegment(models.Model):
-    order = models.IntegerField()
-    key = models.CharField(max_length=255)
-    label = models.CharField(max_length=255)
-    element = models.ForeignKey(UmlElement, on_delete=models.CASCADE, related_name='segments')
-
-    @classmethod
-    def create_from_json(cls, parent, data, order):
-        return cls.objects.create(
-            order=order,
-            key=clean_vale(data, 'key'),
-            label=clean_vale(data, 'label'),
-            element=parent
-        )
-
-
-class UmlLayer(models.Model):
-    order = models.IntegerField()
-    key = models.CharField(max_length=255)
-    label = models.CharField(max_length=255)
-    segment = models.ForeignKey(UmlSegment, on_delete=models.CASCADE, related_name='layers')
-
-    def get_layers(self):
-        return self.fields.filter(is_table_field=False)
-
-    @classmethod
-    def create_from_json(cls, parent, data, order):
-        return cls.objects.create(
-            order=order,
-            key=clean_vale(data, 'key'),
-            label=clean_vale(data, 'label'),
-            segment=parent
-        )
-
-
-class UmlField(models.Model):
-    order = models.IntegerField()
-    is_table_field = models.BooleanField()
-    field = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, default='text')
-    label = models.CharField(max_length=255)
-    layer = models.ForeignKey(UmlLayer, on_delete=models.CASCADE, related_name='fields')
-    sub_field_from = models.ForeignKey("self", blank=True, null=True, related_name="sub_fields",
-                                       on_delete=models.CASCADE)
-
-    @classmethod
-    def create_from_json(cls, parent, data, order):
-        field = cls.objects.create(
-            order=order,
-            is_table_field=False,
-            field=clean_vale(data, 'field'),
-            type=str(clean_vale(data, 'type')).lower(),
-            label=clean_vale(data, 'label'),
-            layer=parent
-        )
-
-        if field.type == 'table':
-            order = 0
-            for sub in data.get('sub_fields', []):
-                order += 10
-                cls.objects.create(
-                    order=order,
-                    is_table_field=True,
-                    field=clean_vale(sub, 'field'),
-                    type=str(clean_vale(sub, 'type')).lower(),
-                    label=clean_vale(sub, 'label'),
-                    layer=parent,
-                    sub_field_from=field
-                )
-        return field
-
-
-class UmlDiagramForm(ModelForm):
-    class Meta:
-        model = UmlDiagram
-        fields = ['name']

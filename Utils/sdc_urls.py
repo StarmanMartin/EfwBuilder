@@ -9,5 +9,6 @@ urlpatterns = [
     re_path('error/(?P<code>[0-9]{3})', sdc_views.Error.as_view(), name='scd_view_error'),
     path('fof', sdc_views.Fof.as_view(), name='scd_view_fof'),
     path('download/file_exporter_task.vbs', sdc_views.DownloadVbs.as_view(), name='file_exporter_task.vbs'),
+    path('download/efw.service', sdc_views.DownloadService.as_view(), name='file_efw.service'),
 
 ]

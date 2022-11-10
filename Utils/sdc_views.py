@@ -89,3 +89,34 @@ Set WinScriptHost = Nothing
         response['Last-Modified'] = datetime.datetime.now()
 
         return response
+
+
+class DownloadService(View):
+
+    filename = 'efw.service'
+    file_content = b'''[Unit]
+Description=EFW (ELN file exporter) service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=!!!!
+ExecStart=/opt/file_exporter/efw
+
+[Install]
+WantedBy=multi-user.target
+'''
+
+
+    def get(self, request):
+
+        response = HttpResponse(self.file_content)
+        response['X-SendFile'] = quote('/sdc_view/utils/download/efw.service')
+        response['Content-Type'] = 'Text/*'
+        response['Content-Length'] = len(self.file_content)
+        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(self.filename)
+        response['Last-Modified'] = datetime.datetime.now()
+
+        return response
