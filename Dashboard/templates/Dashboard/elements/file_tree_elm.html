@@ -1,0 +1,20 @@
+{% load define_action %}
+
+<div class="element depth-{{ elem.depth }} {% if elem.is_collection %}is_collection{% endif %}">
+    <div class="icon-container">
+        {% if elem.is_collection %}
+            <i class="bi bi-folder"></i>
+        {% else %}
+                <i class="bi {{ elem.path | file_icon }}"></i>
+        {% endif %}
+    </div>
+    <div class="element-name">
+        {{ elem.filename }}
+        <a target="_blank" href="{% url 'download_webdav' path=elem.path %}" class="btn btn-info download-btn">
+            <i class="bi bi-download"></i>
+        </a>
+    </div>
+    {% for key, elem in elem.children.items %}
+        {% include 'Dashboard/elements/file_tree_elm.html' with elem=elem %}
+    {% endfor %}
+</div>

@@ -1,0 +1,16 @@
+{% load i18n %}
+<div>
+
+    <div class="search-container form-group form-group-sm no-label">
+        <div class="label-container">
+            <label for="form-tree-search" class="control-label">Search</label>
+        </div>
+        <div class="form-input-container">
+            <input type="text" name="search" maxlength="100"  class="form-control timer-change" id="form-tree-search">
+        </div>
+    </div>
+
+    {% for key, elem in root.items %}
+        {% include 'Dashboard/elements/file_tree_elm.html' with elem=elem %}
+    {% endfor %}
+</div>

@@ -84,7 +84,7 @@ function _connect() {
         };
 
         SDC_SOCKET.onerror = function (err) {
-            console.error('Socket encountered error: ', err.message, 'Closing socket');
+            console.error('Socket encountered error: ', err, 'Closing socket');
             if (IS_CONNECTED) {
                 try {
                     SDC_SOCKET.close();

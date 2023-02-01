@@ -19,6 +19,9 @@
     <a class="navigation-links btn btn-success add-btn" href=".~efw-new~&type=instance" data-toggle="tooltip" data-placement="left" title="{% trans 'Create new EFW using external WebDAV!' %}">
         <i class="bi bi-cloud-plus"></i>
     </a>
+        <a class="navigation-links btn btn-success add-btn" href=".~efw-new~&type=local" data-toggle="tooltip" data-placement="left" title="{% trans 'Create new EFW using local WebDAV!' %}">
+            <i class="bi bi-server"></i>
+        </a>
     </div>
 <div class="alert alert-warning">
     {% trans 'The download may take a few minutes of preparation, because the repository may still have to be cloned and the prjoject must be compiled with the entered parameters.' %}
@@ -41,4 +44,31 @@
         {% endfor %}
         </tbody>
     </table>
+<div class="delete-dialog-container">
+
+
+    <div class="modal fade" id="deleteItemModal" tabindex="-1" aria-labelledby="deleteItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteItemModalLabel">Are you sure?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure that you want to delete <span style="font-weight: bold" class="item_name"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form class="ajax-form" action="{% url 'scd_view_efw_list' %}" method="post" >
+                        {% csrf_token %}
+                        <input type="hidden" name="_method" value="api">
+                        <input type="hidden" name="_action" value="del">
+                        <input class="id_field" type="hidden" name="id" value="">
+                        <button class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>

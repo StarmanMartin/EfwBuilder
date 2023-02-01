@@ -1,4 +1,9 @@
+import json
+
+import requests
 from django.contrib.auth import get_user_model
+
+from WebDAV.resources import BaseFSDavResource
 from sdc_tools.django_extension.views import SDCView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -167,3 +172,54 @@ class GitEdit(LoginRequiredMixin, UserPassesTestMixin, SDCView):
         return render(request, self.template_name, context)
 
 
+class ElnFile(LoginRequiredMixin, UserPassesTestMixin, SDCView):
+    raise_exception = True
+
+    def test_func(self):
+        request = self.request
+        return admin_user_test(request)
+
+    def post_api(self, request):
+        instance = ElnConnection.get_active()
+        session = requests.Session()
+        bDav = BaseFSDavResource("Local24/src/MST-1-test.txt")
+        headers = {"Authorization": "Bearer %s" % instance.token}
+        f = open(bDav.get_abs_path(), "rb")
+        # res = session.post('%s/api/v1/attachments/upload_dataset_attachments' % instance.url, headers=headers, files=payload)
+        res = session.get('%s/api/v1/fileservicer/all_files' % instance.url, headers=headers)
+        json.loads(res.content)
+        session.close()
+        f.close()
+
+        return send_success(request=request, header=_f('Successfully sent'))
+
+
+class ElnManager(LoginRequiredMixin, UserPassesTestMixin, SDCView):
+    template_name = 'Adminview/sdc/eln_manager.html'
+    raise_exception = True
+
+    def test_func(self):
+        request = self.request
+        return admin_user_test(request)
+
+    def post_api(self, request):
+        instance = ElnConnection.get_active()
+        form = ElnConnectionForm(request.POST, instance=instance)
+        context = {'form': form, 'instance': instance}
+        if form.is_valid():
+            ElnConnection.activate_connection(form.cleaned_data['user'], form.cleaned_data['password'])
+
+            return send_success(request=request, context=context,
+                                    header=_f('Successfully Connected'))
+
+        return send_error(self.template_name, status=403, request=request, context=context,
+                          header=_f('Upps!!'),
+                          msg=_f('Please check your details.'))
+
+    def get_content(self, request, *args, **kwargs):
+        instance = ElnConnection.get_active()
+        context = {
+            'form': ElnConnectionForm(instance=instance),
+            'instance': instance,
+        }
+        return render(request, self.template_name, context=context)

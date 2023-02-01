@@ -25,6 +25,8 @@ SECRET_KEY = 'django-insecure-mb2dlfw1jc#&fpi@=(-0ls$%_+l1o+f+ks$y9wuwl7q1qj+h_b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG =  os.environ.get('FLAVOR') != 'production'
 
+
+
 if not DEBUG:
     ALLOWED_HOSTS = os.environ.get('ALLOWED_HOST').split(',')
     PORT = os.environ.get('PORT') or ""
@@ -36,13 +38,15 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = ['http://%s%s' % (x, PORT) for x in os.environ.get('ALLOWED_HOST').split(',')] + ['https://%s%s' % (x, PORT) for x in os.environ.get('ALLOWED_HOST').split(',')]
     WEBDAV_HOST = "%s%s" % (os.environ.get('WEBDAV_HOST'), PORT)
 else:
-    WEBDAV_HOST = "127.0.0.1:8001"
+    WEBDAV_HOST = "http://127.0.0.1:8000"
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 VERSION=0.2
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,7 +64,8 @@ INSTALLED_APPS = [
 ]
 
 INTERNAL_IPS = (
-    '127.0.0.1'
+    '127.0.0.1',
+    '0.0.0.0',
 )
 
 if DEBUG:
@@ -101,7 +106,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'EfwBuilder.wsgi.application'
+# WSGI_APPLICATION = 'EfwBuilder.wsgi.application'
 
 
 # Database
@@ -203,9 +208,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 if DEBUG:
     GOOS = "windows"
-    GOROOT = "/home/martin/go1.10.8.linux-amd64/go"
-    GOPATH ="/home/martin/go1.10.8.linux-amd64/go_home:/home/martin/go"
+    GOROOT = os.environ.get('GOROOT')
+    GOPATH = os.environ.get('GOPATH')
+    ELN_DEVICE_NAME="EFTM"
+    ELN_URL="http://127.0.0.1:3000"
+
 else:
     GOOS =  "windows"
     GOROOT = os.environ.get('GOROOT')
     GOPATH = os.environ.get('GOPATH')
+    ELN_DEVICE_NAME = os.environ.get('ELN_DEVICE_NAME', 'EFTM')
+
+    ELN_URL=os.environ.get('ELN_URL')

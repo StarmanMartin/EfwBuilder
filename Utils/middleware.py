@@ -1,7 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
-# error handling middleware
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 

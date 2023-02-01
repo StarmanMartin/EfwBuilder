@@ -1,9 +1,19 @@
+import os.path
+
 from django import template
 register = template.Library()
 
 @register.simple_tag
 def define(val=None):
     return val
+
+@register.filter(name='file_icon')
+def file_icon(a):
+    _filename, ext = os.path.splitext(a)
+    if ext in ['.txt', '.tex']:
+        return 'bi-file-earmark-text'
+
+    return 'bi-file-earmark-text'
 
 @register.filter(name='range_diff')
 def range_diff(a,b):

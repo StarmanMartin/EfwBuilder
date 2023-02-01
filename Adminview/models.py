@@ -1,7 +1,11 @@
 import glob
+import json
 import os
 import shutil
 import subprocess
+
+import requests
+from django.conf import settings
 from django.utils import timezone
 
 from django.contrib.auth import get_user_model
@@ -111,6 +115,56 @@ class ElnConnection(models.Model):
     url = models.URLField(_('Eln connection!'))
     active = models.BooleanField()
     token = models.CharField(default=None, null=True, blank=True, max_length=255)
+    device= models.IntegerField(default=0)
+
+    @classmethod
+    def get_active(cls):
+        instance = ElnConnection.objects.get(active=True)
+        return instance
+
+    @classmethod
+    def activate_connection(cls, user, password):
+        (instance, c) = ElnConnection.objects.get_or_create(active=True)
+        if c:
+            instance.url = settings.ELN_URL
+
+        error_in_process = True
+
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        payload = {'username': user, 'password': password}
+
+        session = requests.Session()
+        res = session.post('%s/api/v1/public/token' % instance.url, headers=headers,
+                           data=payload)
+
+        if res.status_code == 201:
+            instance.token = json.loads(res.content.decode())['token']
+
+            payload = {"abbr": settings.ELN_DEVICE_NAME}
+            headers = {"Authorization": "Bearer %s" % instance.token}
+
+            res = session.get('%s/api/v1/admin/group_device' % instance.url, headers=headers,
+                               data=payload)
+            if res.status_code == 404:
+                payload = {'first_name': "file_transfer_proxi",
+                           'last_name': "created_by_%s" % user,
+                           'rootType': "Device",
+                           "name_abbreviation": settings.ELN_DEVICE_NAME}
+
+                res = session.post('%s/api/v1/admin/group_device/create' % instance.url, headers=headers,
+                                   data=payload)
+
+            if res.status_code == 201 or res.status_code == 200:
+                instance.device = json.loads(res.content.decode()).get('id')
+                instance.save()
+                error_in_process = False
+
+        if error_in_process:
+            instance.delete()
+        session.close()
+
+        return not error_in_process
+
 
 class ElnConnectionForm(ModelForm):
     user = CharField(help_text=_('Enter admin login info.'))

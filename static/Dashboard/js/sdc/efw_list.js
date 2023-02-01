@@ -11,8 +11,17 @@ class EfwListController extends AbstractSDC {
 
         this.contentReload = true;
         this.events.unshift({
-
+            '.delete-item-btn': {
+                'click': this.openDelete
+            },
         });
+    }
+
+    openDelete(item, ev) {
+        let $ddc = this.find('.delete-dialog-container .modal').modal('show');
+        let id = $(item).data('id');
+        $ddc.find('.id_field').val(id);
+        $ddc.find('.item_name').text($(item).closest(`.item-row-${ id }`).find('.item-row-name').text());
     }
 
     //-------------------------------------------------//
@@ -28,6 +37,11 @@ class EfwListController extends AbstractSDC {
     //-------------------------------------------------//
 
     onInit() {
+    }
+
+    onSubmit(res) {
+        this.find(`.item-row-${res.id}`).remove();
+
     }
 
     onLoad($html) {

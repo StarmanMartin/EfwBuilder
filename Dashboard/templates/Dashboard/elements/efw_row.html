@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <tr class="item-row-{{ elem.pk }}">
-    <th scope="row">{{ elem.name }}</th>
+    <th class="item-row-name" scope="row">{{ elem.name }}</th>
     <td>{{ elem.get_efw_type_display }}</td>
     <td>{{ elem.get_transfer_display }}</td>
     <td>{{ elem.dst }}</td>
@@ -14,6 +14,9 @@
             <a href=".~efw-edit~&efw_pk={{ elem.pk }}" class="btn btn-dark navigation-links" data-toggle="tooltip" data-placement="left" title="{% trans 'Edit Instance!' %}">
                 <i class="bi bi-wrench-adjustable-circle"></i>
             </a>
+            <button data-id="{{ elem.pk }}" class="btn btn-danger delete-item-btn">
+                <i class="bi bi-trash"></i>
+            </button>
         </div>
     </td>
 </tr>

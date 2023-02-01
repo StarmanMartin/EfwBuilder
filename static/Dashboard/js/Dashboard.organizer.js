@@ -1,4 +1,5 @@
 import {} from "./sdc/basic_info.js"
+import {} from "./sdc/file_tree.js"
 import {} from "./sdc/efw_list.js"
 import {} from "./sdc/efw_edit.js"
 import {} from "./sdc/efw_new.js"

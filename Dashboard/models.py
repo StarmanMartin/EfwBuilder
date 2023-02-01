@@ -1,7 +1,10 @@
 import os
 import shutil
 import subprocess
+import urllib.parse
+import uuid
 
+from django.urls import reverse
 from django.utils import timezone
 
 from django.contrib.auth import get_user_model
@@ -28,6 +31,12 @@ SYSTEM_CHOISES = (
     ('win_i386', _('Windows i386')),
     ('win_64', _('Windows 64 Bit')),
     ('ubuntu_64', _('Ubuntu 64 Bit'))
+)
+
+BACKUP_CHOISES = (
+    ('user_backup', _('(A) only if it can be assigned to an ELN user,')),
+    ('all_backup', _('(B) in any case')),
+    ('no_backup', _('(C) no backup'))
 )
 
 TRANSFER_CHOISES = (
@@ -65,8 +74,19 @@ class Instance(models.Model):
     architecture = models.CharField(_('System architecture'),
                                     help_text=_("Your computer architecture : either 64 bit or 32 bit (i386) "),
                                     max_length=255, choices=SYSTEM_CHOISES, default=SYSTEM_CHOISES[0][0])
+
+    backup = models.CharField(_('Backup type'),
+                                    help_text=_("There are three different backup settings. Either, (A) a backup of the data is created only if it can be assigned to an ELN user, (B) a backup of the data is created in any case or (C) a backup is not created in any case."),
+                                    max_length=255, choices=BACKUP_CHOISES, default=BACKUP_CHOISES[0][0])
+
     last_update = models.DateTimeField(default=timezone.now)
     last_build = models.DateTimeField(null=True, blank=True)
+
+    def delete(self, using=None, keep_parents=False):
+        build_path = self.get_path()
+        shutil.rmtree(build_path)
+        super(Instance, self).delete(using, keep_parents)
+
 
     def get_path(self):
         file_paths = os.path.join('./projects/builds/', self.name)
@@ -131,7 +151,7 @@ class Instance(models.Model):
                 my_env['GOARCH'] = '386'
                 go_tool = "go1.10"
             else:
-                go_tool = os.path.join(settings. GOROOT, "bin/go")
+                go_tool = os.path.join(settings.GOROOT, "bin/go")
                 p = subprocess.Popen([go_tool, "mod", "download"], env=my_env, cwd=tp_src)
                 p_status = p.wait()
                 print(p, p_status)
@@ -173,10 +193,37 @@ class InstanceForm(ModelForm):
 
     class Meta:
         model = Instance
-        fields = ['name', 'transfer', 'user', 'password', 'src', 'dst', 'efw_type', 'duration', 'architecture']
+        fields = ['name', 'transfer', 'user', 'password', 'src', 'dst', 'efw_type', 'duration', 'architecture', 'backup']
 
 
 
+class LocalInstanceForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(LocalInstanceForm, self).__init__(*args, **kwargs)
+        self._hosturl = settings.WEBDAV_HOST
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            self.fields['name'].widget.attrs['readonly'] = True
+
+    def clean_name(self):
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            return instance.name
+        else:
+            return self.cleaned_data['name']
+
+    def save(self, commit=True):
+        self.instance.user = str(uuid.uuid4())
+        self.instance.password = str(uuid.uuid4())
+        name = urllib.parse.quote(self.instance.name)
+        self.instance.dst = self._hosturl + reverse('webdav', kwargs={'name': name, 'path': ''})
+        self.instance.last_update = timezone.now()
+        super(LocalInstanceForm, self).save(commit)
+
+    class Meta:
+        model = Instance
+        fields = ['name', 'src', 'efw_type', 'duration', 'architecture', 'backup']
 
 class InstanceSearchForm(AbstractSearchForm):
     CHOICES = (

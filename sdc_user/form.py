@@ -7,7 +7,7 @@ from django import forms
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from .models import CustomUser, EmailLink, getUUID
+from .models import CustomUser, getUUID
 from django.core.mail import EmailMessage
 from django.core.exceptions import ValidationError
 from sdc_tools.django_extension.response import sdc_link_factory
@@ -88,7 +88,6 @@ class CustomEditForm(UserChangeForm):
         ret_val = False
 
         if self.cleaned_data['email'] != self.origin_email:
-            self.instance.is_email_confirmed = False
             self.instance.send_confirm_email(request)
             ret_val = True
 

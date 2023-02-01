@@ -14,6 +14,21 @@
                 {% trans 'EFW List' %}
             </a>
         </li>
+        <li>
+            <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~file-tree">
+                {% trans 'WebDAV Files' %}
+            </a>
+        </li>
+        <li>
+            <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~git-list">
+                {% trans 'Git Repos.' %}
+            </a>
+        </li>
+        <!--li>
+            <a class="navigation-links" href="{% url 'sdc_index' %}~main-view~eln-manager">
+                {% trans 'Manage ELN connection' %}
+            </a>
+        </li-->
     </ul>
 {% endblock %}
 

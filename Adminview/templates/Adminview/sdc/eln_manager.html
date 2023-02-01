@@ -1,0 +1,63 @@
+{% load i18n %}
+
+<div class="container">
+    <br>
+    {% if instance.url %}
+        <h2>Current ELN connection</h2>
+        <div class="row alert alert-primary">
+            <div class="col">
+                <h4>{{ instance.url }}</h4>
+            </div>
+            <div class="col">
+                <h4>
+                    {% if instance.token %}
+                        <i style="color: #198754" class="bi bi-check2-circle"></i>
+                    {% else %}
+                        <i style="color: #dc3545" class="bi bi-exclamation-circle-fill"></i>
+                    {% endif %}
+                </h4>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#connectElnFormModal">
+        {% trans 'Initial connection to ELN Instance' %}
+    </button>
+
+    <form class="ajax-form" method="post" action="{% url 'scd_view_eln_send_file' %}">
+
+            {% csrf_token %}
+            <input type="hidden" name="_method" value="api">
+            <button type="submit" class="btn btn-dark">
+                {% trans 'Send test file' %}
+            </button>
+
+    </form>
+
+
+    <div class="modal fade" id="connectElnFormModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="connectElnFormModalLabel">{% trans 'Connect to ELN' %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form class="ajax-form" method="post" action="{% url 'scd_view_eln_manager' %}">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <input type="hidden" name="_method" value="api">
+                        {% include "elements/form.html" with form=form %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">{% trans 'Close' %}</button>
+                        <button class="btn btn-primary">{% trans 'Connect to ELN' %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -7,6 +7,7 @@ from . import sdc_views
 urlpatterns = [
     # scd view below
     path('basic_info', sdc_views.BasicInfo.as_view(), name='scd_view_basic_info'),
+    path('file_tree', sdc_views.FileTree.as_view(), name='scd_view_file_tree'),
     path('efw_list', sdc_views.EfwList.as_view(), name='scd_view_efw_list'),
     path('efw_edit/<int:efw_pk>', sdc_views.EfwEdit.as_view(), name='scd_view_efw_edit'),
     path('efw_new/<str:type>', sdc_views.EfwNew.as_view(), name='scd_view_efw_new'),

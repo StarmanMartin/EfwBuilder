@@ -1,13 +1,20 @@
+{% load static %}
+
 <div class="container">
-    <h2>Welcome to the EFW manager</h2>
+    <h2>Welcome to the ELN-File-Transfer-Manager</h2>
     <p>Full documentation <a target="_blank" href="https://www.chemotion.net/chemotionsaurus/docs/eln/devices/device_configuration">here</a></p>
-    <p>This server-side application allows you to monitor and organise the data transmission of devices integrated in
-        your ELN Chemotion instance (for more infos click <a
+    <p>This application works in complete dependence on the ELN. User management and data storage are completely managed by ELN and used by the ELN file transfer manager only as a salve system.</p>
+    <img src="{% static 'ELN_file_transfer.drawio.png' %}" alt="Diagram: Networg description">
+
+    <p>The physical separation of the laboratory PCs from the public networks for security reasons has a great obvious influence on the requirements of the file transfer process.
+        Therefore, the data stored locally on the lab device must be forwarded to the ELN via an intermediary system.
+        This server-side application can be used as such an intermediary system. It allows you to monitor and organise the data transmission of devices integrated in
+        your ELN Chemotion instance (for more infos click ELN-File-Transfer-Manager, <a
                 href="https://www.chemotion.net/chemotionsaurus/docs/category/device-integration"
                 target="_blank">here</a> ). With the <a href="https://github.com/ComPlat/ELN_file_watcher"
-                                                        target="_blank">EFW (ELN File Watcher)</a> manager, EFW
+                                                        target="_blank">EFW (ELN File Watcher)</a>
         instances adapted to the requirements can be generated quickly and simply. These instances can then be installed
-        on the target system in just a few steps. In addition, this server provides a data storage unit with an
+        on the target lab system in just a few steps. In addition, this server provides a data storage proxy with an
         interface to receive data from your target systems. These data are then automatically entered in the ELN.</p>
     <h3>How to install EFW</h3>
     <p>The following section introduces the installation of the EFW. Note that the installation is <b>only</b> intended for Windows x64 and i386 devices and Linux x64 devices.</p>
@@ -36,5 +43,16 @@
             </ol>
         </li>
     </ol>
+    <h3>Set up Firewale</h3>
 
+
+    <code>sudo ufw deny in on eth0</code>
+    <code>sudo ufw allow in on eth0 sudo ufw allow from 203.0.113.103 proto tcp to any port 22<</code>
+    <code>sudo ufw allow from 203.0.113.103 proto tcp to any port 22</code>
+    <code>*filter
+        :INPUT ACCEPT [0:0]
+        iptables -A INPUT -i eth0 -p tcp -m tcp -m state --state RELATED,ESTABLISHED -j ACCEPT
+        COMMIT
+    </code>
+    File: /etc/ufw/before.rules
 </div>
