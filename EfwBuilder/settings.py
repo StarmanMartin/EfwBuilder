@@ -115,7 +115,7 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': BASE_DIR / 'elnFiletransfer.db.sqlite3',
         }
     }
 else:
@@ -206,17 +206,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 #EMAIL_HOST_PASSWORD = ''
 #EMAIL_USE_TLS = True
 
+GOOS =  "windows"
+GOROOT = os.environ.get('GOROOT')
+GOPATH = os.environ.get('GOPATH')
+
 if DEBUG:
-    GOOS = "windows"
-    GOROOT = os.environ.get('GOROOT')
-    GOPATH = os.environ.get('GOPATH')
     ELN_DEVICE_NAME="EFTM"
     ELN_URL="http://127.0.0.1:3000"
+    MAX_UPLOAD_SIZE=os.environ.get('MAX_UPLOAD_SIZE', 250000)
 
 else:
-    GOOS =  "windows"
-    GOROOT = os.environ.get('GOROOT')
-    GOPATH = os.environ.get('GOPATH')
     ELN_DEVICE_NAME = os.environ.get('ELN_DEVICE_NAME', 'EFTM')
-
     ELN_URL=os.environ.get('ELN_URL')
+    MAX_UPLOAD_SIZE=os.environ.get('MAX_UPLOAD_SIZE', 5e+7)
+

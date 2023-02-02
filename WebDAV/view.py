@@ -1,13 +1,16 @@
 import base64
+import hashlib
 import json
 import os
 import re
 import shutil
+import uuid
 
 import requests
 
 from Adminview.models import ElnConnection
 from Dashboard.models import Instance
+from django.conf import settings
 from WebDAV.resources import WriteFSDavResource, SendFileFSDavResource
 from WebDAV.utils import rfc1123_date
 
@@ -203,16 +206,37 @@ class DavView(View):
             depth = int(depth)
         return depth
 
+
+
     def put(self, request, path, *args, **kwargs):
         instance = ElnConnection.get_active()
+
         session = requests.Session()
         path = "%s/%s" % (self.instance.name, path)
         headers = {"Authorization": "Bearer %s" % instance.token}
-        payload = {'file': (path, request.body)}
-        res = session.post('%s/api/v1/attachments/upload_raw_attachments' % instance.url, headers=headers, data={'device_id': instance.device, 'filepath': path}, files=payload)
-        result = json.loads(res.content)
+
+        if len(request.body) <= settings.MAX_UPLOAD_SIZE:
+            payload = {'file': (path, request.body)}
+            res = session.post('%s/api/v1/attachments/upload_raw_attachments' % instance.url, headers=headers, data={'device_id': instance.device, 'filepath': path}, files=payload)
+        else:
+            key = uuid.uuid1().__str__()
+            snippet = 0
+            counter = 0
+            hash_md5 = hashlib.md5()
+            while snippet < len(request.body):
+                start_snippet = snippet
+                snippet += settings.MAX_UPLOAD_SIZE
+                file_chunk = request.body[start_snippet:snippet]
+                hash_md5.update(file_chunk)
+                payload = {'file': (path, file_chunk)}
+                res = session.post('%s/api/v1/attachments/upload_chunk' % instance.url, headers=headers, data={'key': key, 'counter': counter}, files=payload)
+                counter += 1
+                if (res.status_code != 200 and res.status_code != 201):
+                    return HttpResponseUnAuthorized()
+            res = session.post('%s/api/v1/attachments/upload_raw_chunk_complete' % instance.url, headers=headers, data={'key': key, 'filename': path, 'checksum': hash_md5.hexdigest(), 'device_id': instance.device})
+
         session.close()
-        if result:
+        if res.status_code == 200 or res.status_code == 201:
             return HttpResponseCreated()
         return HttpResponseUnAuthorized()
 
